@@ -3,21 +3,15 @@ package com.example.widjet.main;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
-import com.example.widjet.main.database.App;
-import com.example.widjet.main.database.dao.PrazdnikDao;
-import com.example.widjet.main.database.database.PrazdnikDataBase;
-import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
 import com.example.widjet.main.imagecreator.ImageCreater;
 
 import java.util.Date;
-import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
 
@@ -56,9 +50,9 @@ public class MyWidget extends AppWidgetProvider {
     private void updateTimeWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         PrazdnikDTO prazdnik = getPrazdnik(new Date());
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        views.setImageViewBitmap(R.id.timeImg, ImageCreater.createUpdate("20:20", 100, Color.WHITE, Paint.Align.LEFT, context));
-        views.setImageViewBitmap(R.id.dateImg, ImageCreater.createUpdate("20/12/2020", 50, Color.WHITE, Paint.Align.LEFT, context));
-        views.setImageViewBitmap(R.id.textImg, ImageCreater.createUpdate(prazdnik.getName(), 50, Color.WHITE, Paint.Align.LEFT, context));
+        views.setTextViewText(R.id.timeImg, "20:20" );
+        views.setTextViewText(R.id.dateImg, "20/12/2020" );
+        views.setTextViewText(R.id.textImg, prazdnik.getName() );
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
@@ -76,7 +70,7 @@ public class MyWidget extends AppWidgetProvider {
         //    System.out.println(byId);
         //    System.out.println(allprazdnik.size());
         PrazdnikDTO prazdnikDTO = new PrazdnikDTO();
-        prazdnikDTO.setName(" Рождество");
+        prazdnikDTO.setName(" Рождество пасха кирилица второй день каждый ");
         prazdnikDTO.setDescription("wdwdhjkdhqdggdhwdgwdgjhwgdjwgdjwgd");
         prazdnikDTO.setImg("pasha");
         return prazdnikDTO;
