@@ -3,13 +3,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/widget_text"
-        android:textSize="18sp" />
+    <ImageView
+        android:id="@+id/timeImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/ic_launcher">
+    </ImageView>
 
+    <ImageView
+
+        android:id="@+id/dateImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/timeImg"
+        android:src="@mipmap/ic_launcher_round">
+    </ImageView>
+
+
+    <ImageView
+        android:id="@+id/textImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/timeImg"
+        android:src="@mipmap/ic_launcher_round">
+    </ImageView>
+
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/ic_launcher_round">
+    </ImageView>
 
 </RelativeLayout>
