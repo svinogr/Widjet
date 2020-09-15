@@ -3,19 +3,16 @@ package com.example.widjet.main;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.widget.RemoteViews;
-
-import androidx.room.DatabaseConfiguration;
 
 import com.example.widjet.R;
 import com.example.widjet.main.database.App;
+import com.example.widjet.main.database.dao.DataDao;
 import com.example.widjet.main.database.dao.PrazdnikDao;
 import com.example.widjet.main.database.database.PrazdnikDataBase;
+import com.example.widjet.main.database.entity.DataEntity;
 import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
-import com.example.widjet.main.imagecreator.ImageCreater;
 
 import java.util.Date;
 import java.util.List;
@@ -54,11 +51,13 @@ public class MyWidget extends AppWidgetProvider {
 
 
     private void updateTimeWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        PrazdnikDTO prazdnik = getPrazdnik(new Date());
+        PrazdnikDTO prazdnik = getPrazdnik(new Date(1736813400000L));
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         views.setTextViewText(R.id.timeImg, "20:20");
         views.setTextViewText(R.id.dateImg, "20/12/2020");
         views.setTextViewText(R.id.textImg, prazdnik.getName());
+        System.out.println(prazdnik.getImg());
+
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
@@ -68,20 +67,29 @@ public class MyWidget extends AppWidgetProvider {
 
     private PrazdnikDTO getPrazdnik(Date date) {
         PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
+        DataDao dataDao = prazdnikDataBase.dataDao();
+        System.out.println("gP" + date.getTime() );
+        List<DataEntity> allDateByDate = dataDao.getAllDateByDate(date);
+
         PrazdnikDao prazdnikDao = prazdnikDataBase.prazdnikDao();
+        PrazdnikEntity prazdnikEntity = null;
 
+        if (allDateByDate.size() > 1) {
 
+            for (DataEntity d : allDateByDate) {
+                PrazdnikEntity byId = prazdnikDao.getById(d.getParent_id());
 
-        PrazdnikEntity byId = prazdnikDao.getById(2);
-        List<PrazdnikEntity> allprazdnik = prazdnikDao.getAllprazdnik();
-        System.out.println(byId);
-        System.out.println(allprazdnik.size());
-        PrazdnikDTO prazdnikDTO = new PrazdnikDTO();
-        prazdnikDTO.setName(" Рождество пасха кирилица второй день каждый ");
-        prazdnikDTO.setDescription("wdwdhjkdhqdggdhwdgwdgjhwgdjwgdjwgd");
-        prazdnikDTO.setImg("pasha");
-        return prazdnikDTO;
+                if (!byId.isPost()) {
+                    prazdnikEntity = byId;
+                }
+            }
+        } else {
+            prazdnikEntity = prazdnikDao.getById(allDateByDate.get(0).getParent_id());
+        }
+        System.out.println(prazdnikEntity);
 
+        return new PrazdnikDTO(prazdnikEntity);
     }
-
 }
+
+

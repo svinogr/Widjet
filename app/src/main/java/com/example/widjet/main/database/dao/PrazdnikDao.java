@@ -24,7 +24,7 @@ public  interface PrazdnikDao {
     @Insert
     long insert(PrazdnikEntity prazdnik);
 
-    @Transaction
+/*    @Transaction
     @Query("select * from PrazdnikEntity where 'date' = :date ")
-    public List<DataAndPrazdnik> getPrazdnikBy(Date date);
+    public List<DataAndPrazdnik> getPrazdnikBy(Date date);*/
 }

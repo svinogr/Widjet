@@ -8,7 +8,7 @@ public class DateConverter {
 
     @TypeConverter
     public  Long fromDate(Date date) {
-        System.out.println(date);
+        System.out.println(date.getTime());
         return date == null ? null : date.getTime();
     }
 
