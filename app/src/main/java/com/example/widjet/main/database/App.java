@@ -5,9 +5,14 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.example.widjet.main.database.database.PrazdnikDataBase;
+import com.example.widjet.main.database.entity.DataEntity;
+
+import java.io.File;
+import java.util.List;
 
 
 public class App extends Application {
+    private static final String DB_NAME = "prazdnik";
     public static App instance;
     private PrazdnikDataBase prazdnikDataBase;
 
@@ -25,6 +30,19 @@ public class App extends Application {
 
         instance = this;
         //убрать allowqweryy времено для работы в UI
-        prazdnikDataBase = Room.databaseBuilder(this, PrazdnikDataBase.class, "prazdnik").allowMainThreadQueries().build();
+        final File dbFile = this.getApplicationContext().getDatabasePath(DB_NAME);
+
+        if (!dbFile.exists()) {
+            prazdnikDataBase = Room.databaseBuilder(this, PrazdnikDataBase.class, "prazdnik")
+                    .allowMainThreadQueries()
+                    .createFromAsset("prazdnik")
+                    .build();
+
+            System.out.println("база пошла делаться");
+        } else {
+            System.out.println("файл уже есть");
+        }
+
+
     }
 }

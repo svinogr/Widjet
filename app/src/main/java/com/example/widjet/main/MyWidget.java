@@ -7,11 +7,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.widget.RemoteViews;
 
+import androidx.room.DatabaseConfiguration;
+
 import com.example.widjet.R;
+import com.example.widjet.main.database.App;
+import com.example.widjet.main.database.dao.PrazdnikDao;
+import com.example.widjet.main.database.database.PrazdnikDataBase;
+import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
 import com.example.widjet.main.imagecreator.ImageCreater;
 
 import java.util.Date;
+import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
 
@@ -36,8 +43,7 @@ public class MyWidget extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
         //TODO хрен знает здесь нужно начальную базу создать или нет???
-
-        // System.out.println(prazdnikDataBase);
+        System.out.println("enabled widget");
     }
 
     //onDisabled вызывается при удалении последнего экземпляра виджета.
@@ -50,25 +56,26 @@ public class MyWidget extends AppWidgetProvider {
     private void updateTimeWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         PrazdnikDTO prazdnik = getPrazdnik(new Date());
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        views.setTextViewText(R.id.timeImg, "20:20" );
-        views.setTextViewText(R.id.dateImg, "20/12/2020" );
-        views.setTextViewText(R.id.textImg, prazdnik.getName() );
+        views.setTextViewText(R.id.timeImg, "20:20");
+        views.setTextViewText(R.id.dateImg, "20/12/2020");
+        views.setTextViewText(R.id.textImg, prazdnik.getName());
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
-
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     private PrazdnikDTO getPrazdnik(Date date) {
+        PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
+        PrazdnikDao prazdnikDao = prazdnikDataBase.prazdnikDao();
 
-        //    PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
-        //    PrazdnikDao prazdnikDao = prazdnikDataBase.prazdnikDao();
-        //     PrazdnikEntity byId = prazdnikDao.getById(2);
-        //     List<PrazdnikEntity> allprazdnik = prazdnikDao.getAllprazdnik();
-        //    System.out.println(byId);
-        //    System.out.println(allprazdnik.size());
+
+
+        PrazdnikEntity byId = prazdnikDao.getById(2);
+        List<PrazdnikEntity> allprazdnik = prazdnikDao.getAllprazdnik();
+        System.out.println(byId);
+        System.out.println(allprazdnik.size());
         PrazdnikDTO prazdnikDTO = new PrazdnikDTO();
         prazdnikDTO.setName(" Рождество пасха кирилица второй день каждый ");
         prazdnikDTO.setDescription("wdwdhjkdhqdggdhwdgwdgjhwgdjwgdjwgd");
