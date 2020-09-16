@@ -58,8 +58,10 @@ public class MyWidget extends AppWidgetProvider {
         calendar.set(Calendar.HOUR,0 );
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        // for testing in code
-        calendar.set(Calendar.YEAR, 2021);
+        calendar.set(Calendar.MILLISECOND, 60000); // facking calendar need set millsecond every time
+        // TODO for testing in code удалить
+        calendar.set(Calendar.YEAR, 2022);
+
         Date time = calendar.getTime();
 
         System.out.println(simpleDateFormat.format(time));
@@ -120,5 +122,4 @@ public class MyWidget extends AppWidgetProvider {
         prazdnikEntity.setId(-1);
         return prazdnikEntity;
     }
-
 }
