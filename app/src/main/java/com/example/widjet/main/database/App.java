@@ -40,6 +40,9 @@ public class App extends Application {
 
             System.out.println("база пошла делаться");
         } else {
+            prazdnikDataBase = Room.databaseBuilder(this, PrazdnikDataBase.class, "prazdnik")
+                    .allowMainThreadQueries()
+                    .build();
             System.out.println("файл уже есть");
         }
 

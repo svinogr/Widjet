@@ -14,7 +14,10 @@ import com.example.widjet.main.database.entity.DataEntity;
 import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
@@ -49,12 +52,24 @@ public class MyWidget extends AppWidgetProvider {
         super.onDisabled(context);
     }
 
-
     private void updateTimeWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        PrazdnikDTO prazdnik = getPrazdnik(new Date(1736813400000L));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.HOUR,0 );
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        // for testing in code
+        calendar.set(Calendar.YEAR, 2021);
+        Date time = calendar.getTime();
+
+        System.out.println(simpleDateFormat.format(time));
+        System.out.println(time.getTime());
+
+        PrazdnikDTO prazdnik = getPrazdnik(time);
+
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         views.setTextViewText(R.id.timeImg, "20:20");
-        views.setTextViewText(R.id.dateImg, "20/12/2020");
+        views.setTextViewText(R.id.dateImg, simpleDateFormat.format(time));
         views.setTextViewText(R.id.textImg, prazdnik.getName());
         System.out.println(prazdnik.getImg());
 
@@ -66,9 +81,10 @@ public class MyWidget extends AppWidgetProvider {
     }
 
     private PrazdnikDTO getPrazdnik(Date date) {
+
         PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
         DataDao dataDao = prazdnikDataBase.dataDao();
-        System.out.println("gP" + date.getTime() );
+
         List<DataEntity> allDateByDate = dataDao.getAllDateByDate(date);
 
         PrazdnikDao prazdnikDao = prazdnikDataBase.prazdnikDao();
@@ -84,12 +100,18 @@ public class MyWidget extends AppWidgetProvider {
                 }
             }
         } else {
-            prazdnikEntity = prazdnikDao.getById(allDateByDate.get(0).getParent_id());
+
+            if (allDateByDate.size() != 0) {
+                prazdnikEntity = prazdnikDao.getById(allDateByDate.get(0).getParent_id());
+            } else {
+                prazdnikEntity = new PrazdnikEntity();
+                prazdnikEntity.setName("Неправильно установлено время");
+                prazdnikEntity.setImg("god");
+                prazdnikEntity.setId(-1);
+            }
         }
-        System.out.println(prazdnikEntity);
+
 
         return new PrazdnikDTO(prazdnikEntity);
     }
 }
-
-
