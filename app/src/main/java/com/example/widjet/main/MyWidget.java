@@ -22,6 +22,8 @@ import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
 
+    private Date time;
+
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -55,14 +57,14 @@ public class MyWidget extends AppWidgetProvider {
     private void updateTimeWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.HOUR,0 );
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 60000); // facking calendar need set millsecond every time
-        // TODO for testing in code удалить
-        calendar.set(Calendar.YEAR, 2022);
-
-        Date time = calendar.getTime();
+        calendar.set(Calendar.MILLISECOND, 0); // facking calendar need set millsecond every time
+        // TODO for testing in code удалить-----
+        calendar.set(Calendar.YEAR, 2023);
+        // TODO --------------
+        time = calendar.getTime();
 
         System.out.println(simpleDateFormat.format(time));
         System.out.println(time.getTime());
@@ -70,7 +72,7 @@ public class MyWidget extends AppWidgetProvider {
         PrazdnikDTO prazdnik = getPrazdnik(time);
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        views.setTextViewText(R.id.timeImg, "20:20");
+        views.setTextViewText(R.id.timeImg, getTime());
         views.setTextViewText(R.id.dateImg, simpleDateFormat.format(time));
         views.setTextViewText(R.id.textImg, prazdnik.getName());
         System.out.println(prazdnik.getImg());
@@ -80,6 +82,10 @@ public class MyWidget extends AppWidgetProvider {
                 context.getPackageName()));
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    private CharSequence getTime() {
+        return "20:20";
     }
 
     private PrazdnikDTO getPrazdnik(Date date) {
@@ -117,7 +123,7 @@ public class MyWidget extends AppWidgetProvider {
 
     private PrazdnikEntity setDefault() {
         PrazdnikEntity prazdnikEntity = new PrazdnikEntity();
-        prazdnikEntity.setName("Неправильно установлено время");
+        prazdnikEntity.setName("Да будет Бог с вами");
         prazdnikEntity.setImg("god");
         prazdnikEntity.setId(-1);
         return prazdnikEntity;
