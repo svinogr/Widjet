@@ -103,15 +103,22 @@ public class MyWidget extends AppWidgetProvider {
 
             if (allDateByDate.size() != 0) {
                 prazdnikEntity = prazdnikDao.getById(allDateByDate.get(0).getParent_id());
-            } else {
-                prazdnikEntity = new PrazdnikEntity();
-                prazdnikEntity.setName("Неправильно установлено время");
-                prazdnikEntity.setImg("god");
-                prazdnikEntity.setId(-1);
             }
         }
 
+        if (prazdnikEntity == null) {
+            prazdnikEntity = setDefault();
+        }
 
         return new PrazdnikDTO(prazdnikEntity);
     }
+
+    private PrazdnikEntity setDefault() {
+        PrazdnikEntity prazdnikEntity = new PrazdnikEntity();
+        prazdnikEntity.setName("Неправильно установлено время");
+        prazdnikEntity.setImg("god");
+        prazdnikEntity.setId(-1);
+        return prazdnikEntity;
+    }
+
 }
