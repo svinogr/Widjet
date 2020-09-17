@@ -62,7 +62,7 @@ public class MyWidget extends AppWidgetProvider {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0); // facking calendar need set millsecond every time
         // TODO for testing in code удалить-----
-        calendar.set(Calendar.YEAR, 2023);
+    //    calendar.set(Calendar.YEAR, 2023);
         // TODO --------------
         time = calendar.getTime();
 
