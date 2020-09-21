@@ -17,6 +17,11 @@
                 <action
                     android:name="android.appwidget.action.APPWIDGET_UPDATE">
                 </action>
+
+                <action android:name="com.example.widjet.main.MyWidget.UPDATE_WIDGET">
+
+                </action>
+
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -25,7 +30,7 @@
 
 
         </receiver>
-     <service android:name=".main.MyWidget$UpdateService">
+     <service android:name=".main.service.UpdateService">
 
         </service>
     </application>

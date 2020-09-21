@@ -2,16 +2,12 @@ package com.example.widjet.main;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
+import android.os.Handler;
 import android.widget.RemoteViews;
-
-import androidx.annotation.Nullable;
 
 import com.example.widjet.R;
 import com.example.widjet.main.database.App;
@@ -21,6 +17,7 @@ import com.example.widjet.main.database.database.PrazdnikDataBase;
 import com.example.widjet.main.database.entity.DataEntity;
 import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
+import com.example.widjet.main.service.UpdateService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,22 +28,43 @@ import java.util.List;
 public class MyWidget extends AppWidgetProvider {
 
     private Date time;
-    private final String UPDATE_WIDGET = "updateWidget";
+    private final String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
 
     private PendingIntent createUpdatePendIntent(Context context) {
         Intent intent = new Intent(UPDATE_WIDGET);
+        System.out.println("createUpdatePendIntent");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntent;
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        context.startService(new Intent(context, UpdateService.class));
+      /*  System.out.println("onUpdate");
+        Intent intent = new Intent(context, UpdateService.class);
+        System.out.println("onUpdate getACtion intent " + intent.getAction());
+        context.startService(intent);*/
  /*       for (int appWidgetId : appWidgetIds) {
             updateTimeWidget(context, appWidgetManager, appWidgetId);
         }*/
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if(true) {
+                    handler.postDelayed(this, 1000);
+                    System.out.println("---");
+                    System.out.println("onUpdate");
+                    Intent intent = new Intent(context, UpdateService.class);
+                    System.out.println("onUpdate getACtion intent " + intent.getAction());
+                    context.startService(intent);
+                }
+            }
+        };
+        handler.post(runnable);
+
     }
 
     //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
@@ -57,7 +75,7 @@ public class MyWidget extends AppWidgetProvider {
 
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
-    public void onEnabled(Context context) {
+    public void onEnabled(final Context context) {
         super.onEnabled(context);
         //TODO хрен знает здесь нужно начальную базу создать или нет???
         System.out.println("enabled widget");
@@ -67,20 +85,24 @@ public class MyWidget extends AppWidgetProvider {
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.add(Calendar.SECOND, 1);
 
-        alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 1000, createUpdatePendIntent(context));
+
+
+        alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 60000, createUpdatePendIntent(context));
+
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-
+        System.out.println("getaction on recive " + intent.getAction());
         if (UPDATE_WIDGET.equals(intent.getAction())) {
             context.startService(new Intent(context, UpdateService.class));
+            System.out.println("onREcive in if");
         }
     }
 
 
-    public static class UpdateService extends Service {
+    /*public static class UpdateService extends Service {
 
         @Nullable
         @Override
@@ -89,12 +111,13 @@ public class MyWidget extends AppWidgetProvider {
         }
 
         @Override
-        public void onStart(Intent intent, int startId) {
+        public int onStartCommand(Intent intent, int flag,  int startId) {
             super.onStart(intent, startId);
             RemoteViews views = updateTimeWidget(this);
             ComponentName widget = new ComponentName(this, MyWidget.class);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
             appWidgetManager.updateAppWidget(widget, views);
+            return 1;
         }
 
         private RemoteViews updateTimeWidget(Context context) {
@@ -111,7 +134,7 @@ public class MyWidget extends AppWidgetProvider {
             return views;
 
 
-       /* calendar.set(Calendar.HOUR_OF_DAY, 0);
+       *//* calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0); // facking calendar need set millsecond every time
@@ -135,9 +158,9 @@ public class MyWidget extends AppWidgetProvider {
                 null,
                 context.getPackageName()));
 
-        appWidgetManager.updateAppWidget(appWidgetId, views);*/
+        appWidgetManager.updateAppWidget(appWidgetId, views);*//*
         }
-    }
+    }*/
 
 
     //onDisabled вызывается при удалении последнего экземпляра виджета.
