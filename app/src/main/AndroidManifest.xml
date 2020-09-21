@@ -25,5 +25,8 @@
 
 
         </receiver>
+     <service android:name=".main.MyWidget$UpdateService">
+
+        </service>
     </application>
 </manifest>
