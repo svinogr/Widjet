@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
@@ -28,43 +30,19 @@ import java.util.List;
 public class MyWidget extends AppWidgetProvider {
 
     private Date time;
-    private final String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
+    private final static String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
+    private final String TAG = "MyWidget";
 
-    private PendingIntent createUpdatePendIntent(Context context) {
+    public static PendingIntent createUpdatePendIntent(Context context) {
         Intent intent = new Intent(UPDATE_WIDGET);
         System.out.println("createUpdatePendIntent");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        return pendingIntent;
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-      /*  System.out.println("onUpdate");
-        Intent intent = new Intent(context, UpdateService.class);
-        System.out.println("onUpdate getACtion intent " + intent.getAction());
-        context.startService(intent);*/
- /*       for (int appWidgetId : appWidgetIds) {
-            updateTimeWidget(context, appWidgetManager, appWidgetId);
-        }*/
-
-        final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if(true) {
-                    handler.postDelayed(this, 1000);
-                    System.out.println("---");
-                    System.out.println("onUpdate");
-                    Intent intent = new Intent(context, UpdateService.class);
-                    System.out.println("onUpdate getACtion intent " + intent.getAction());
-                    context.startService(intent);
-                }
-            }
-        };
-        handler.post(runnable);
-
     }
 
     //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
@@ -77,30 +55,62 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
-        //TODO хрен знает здесь нужно начальную базу создать или нет???
-        System.out.println("enabled widget");
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Log.i(TAG, "onEnabled: ");
+        context.startService(new Intent(context, UpdateService.class));
 
-        Calendar calendar = Calendar.getInstance();
+    /*    Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.SECOND, 1);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.add(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
+        Log.i(TAG, "onEnabled: time" + calendar.getTime());
+        AlarmManager systemService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+      //  systemService.setWindow(AlarmManager.RTC, calendar.getTime().getTime(), 60000, createUpdatePendIntent(context));
 
+        systemService.setExact(AlarmManager.RTC, calendar.getTime().getTime(), createUpdatePendIntent(context));*/
 
-        alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 60000, createUpdatePendIntent(context));
 
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        System.out.println("getaction on recive " + intent.getAction());
+        Log.i(TAG, "onReceive: " + new Date() );
+        Log.i(TAG, "onReceive: " + intent.getAction() );
+        System.out.println("on recive");
+
         if (UPDATE_WIDGET.equals(intent.getAction())) {
-            context.startService(new Intent(context, UpdateService.class));
-            System.out.println("onREcive in if");
+           updateViews(context);
         }
     }
 
+    private void updateViews(Context context) {
+        RemoteViews views = updateTimeWidget(context);
+        ComponentName widget = new ComponentName(context, MyWidget.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetManager.updateAppWidget(widget, views);
+    }
+
+    private RemoteViews updateTimeWidget(Context context) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+        PrazdnikDTO prazdnik = getPrazdnik();
+        System.out.println(prazdnik);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+
+        views.setTextViewText(R.id.timeImg,
+                calendar.get(Calendar.HOUR_OF_DAY) + " : " + (calendar.get(Calendar.MINUTE) < 10 ? "0 " + calendar.get(Calendar.MINUTE) : calendar.get(Calendar.MINUTE)));
+        views.setTextViewText(R.id.dateImg, simpleDateFormat.format(calendar.getTime()));
+
+        views.setTextViewText(R.id.textImg, prazdnik.getName());
+        views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
+                null,
+                context.getPackageName()));
+        return views;
+    }
 
     /*public static class UpdateService extends Service {
 
@@ -163,87 +173,73 @@ public class MyWidget extends AppWidgetProvider {
     }*/
 
 
-    //onDisabled вызывается при удалении последнего экземпляра виджета.
-    @Override
-    public void onDisabled(Context context) {
-        super.onDisabled(context);
-        // как я понимаю удаляет интент с которым в сервисе что то крутится
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(createUpdatePendIntent(context));
-    }
+        //onDisabled вызывается при удалении последнего экземпляра виджета.
+        @Override
+        public void onDisabled (Context context){
+            super.onDisabled(context);
+            // как я понимаю удаляет интент с которым в сервисе что то крутится
 
-    private void updateTimeWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0); // facking calendar need set millsecond every time
-        // TODO for testing in code удалить-----
-        //    calendar.set(Calendar.YEAR, 2023);
-        // TODO --------------
-        time = calendar.getTime();
+        }
 
-        System.out.println(simpleDateFormat.format(time));
-        System.out.println(time.getTime());
+        private PrazdnikDTO getPrazdnik(){
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Calendar calendar = new GregorianCalendar();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0); // facking calendar need set millsecond every time
+            // TODO for testing in code удалить-----
+            //    calendar.set(Calendar.YEAR, 2023);
+            // TODO --------------
+            time = calendar.getTime();
 
-        PrazdnikDTO prazdnik = getPrazdnik(time);
+            System.out.println(simpleDateFormat.format(time));
+            System.out.println(time.getTime());
 
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        views.setTextViewText(R.id.timeImg, getTime());
-        views.setTextViewText(R.id.dateImg, simpleDateFormat.format(time));
-        views.setTextViewText(R.id.textImg, prazdnik.getName());
-        System.out.println(prazdnik.getImg());
+            return getPrazdnikByDate(time);
 
-        views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
-                null,
-                context.getPackageName()));
 
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-    }
 
-    private CharSequence getTime() {
-        return "20:20";
-    }
+        }
 
-    private PrazdnikDTO getPrazdnik(Date date) {
+        private PrazdnikDTO getPrazdnikByDate(Date date){
 
-        PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
-        DataDao dataDao = prazdnikDataBase.dataDao();
+            PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
+            DataDao dataDao = prazdnikDataBase.dataDao();
 
-        List<DataEntity> allDateByDate = dataDao.getAllDateByDate(date);
+            List<DataEntity> allDateByDate = dataDao.getAllDateByDate(date);
 
-        PrazdnikDao prazdnikDao = prazdnikDataBase.prazdnikDao();
-        PrazdnikEntity prazdnikEntity = null;
+            PrazdnikDao prazdnikDao = prazdnikDataBase.prazdnikDao();
+            PrazdnikEntity prazdnikEntity = null;
 
-        if (allDateByDate.size() > 1) {
+            if (allDateByDate.size() > 1) {
 
-            for (DataEntity d : allDateByDate) {
-                PrazdnikEntity byId = prazdnikDao.getById(d.getParent_id());
+                for (DataEntity d : allDateByDate) {
+                    PrazdnikEntity byId = prazdnikDao.getById(d.getParent_id());
 
-                if (!byId.isPost()) {
-                    prazdnikEntity = byId;
+                    if (!byId.isPost()) {
+                        prazdnikEntity = byId;
+                    }
+                }
+            } else {
+
+                if (allDateByDate.size() != 0) {
+                    prazdnikEntity = prazdnikDao.getById(allDateByDate.get(0).getParent_id());
                 }
             }
-        } else {
 
-            if (allDateByDate.size() != 0) {
-                prazdnikEntity = prazdnikDao.getById(allDateByDate.get(0).getParent_id());
+            if (prazdnikEntity == null) {
+                prazdnikEntity = setDefault();
             }
+
+            return new PrazdnikDTO(prazdnikEntity);
         }
 
-        if (prazdnikEntity == null) {
-            prazdnikEntity = setDefault();
+        private PrazdnikEntity setDefault () {
+            PrazdnikEntity prazdnikEntity = new PrazdnikEntity();
+            prazdnikEntity.setName("Да будет Бог с вами");
+            prazdnikEntity.setImg("god");
+            prazdnikEntity.setId(-1);
+            return prazdnikEntity;
         }
-
-        return new PrazdnikDTO(prazdnikEntity);
     }
-
-    private PrazdnikEntity setDefault() {
-        PrazdnikEntity prazdnikEntity = new PrazdnikEntity();
-        prazdnikEntity.setName("Да будет Бог с вами");
-        prazdnikEntity.setImg("god");
-        prazdnikEntity.setId(-1);
-        return prazdnikEntity;
-    }
-}

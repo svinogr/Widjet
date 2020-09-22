@@ -5,10 +5,8 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.example.widjet.main.database.database.PrazdnikDataBase;
-import com.example.widjet.main.database.entity.DataEntity;
 
 import java.io.File;
-import java.util.List;
 
 
 public class App extends Application {
@@ -45,7 +43,5 @@ public class App extends Application {
                     .build();
             System.out.println("файл уже есть");
         }
-
-
     }
 }
