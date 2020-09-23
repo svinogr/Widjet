@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:textSize="50sp"
         tool:text="20:20"
-
+        android:textColor="@color/timeColor"
         />
 
     <TextView
@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/timeImg"
         android:textSize="12sp"
-        tool:text="20/12/2020" />
+        tool:text="20/12/2020"
+        android:textColor="@color/timeColor"/>
 
 
     <TextView
@@ -35,7 +36,8 @@
         android:paddingRight="8dp"
         android:textSize="12sp"
         tool:text="HJ dhwjhdwwdwdwdwdwdwdjd hwdjwdwdwdwdwd
-         wjwhdjw djhwd  wdh" />
+         wjwhdjw djhwd  wdh"
+        android:textColor="@color/timeColor"/>
 
 
     <ImageView
