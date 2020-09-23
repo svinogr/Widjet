@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
-
     private Date time;
     private final static String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
     private final String TAG = "MyWidget";
