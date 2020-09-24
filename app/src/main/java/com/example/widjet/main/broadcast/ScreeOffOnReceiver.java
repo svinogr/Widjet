@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.widjet.main.service.UpdateWithScreenResume;
+import com.example.widjet.main.service.UpdateService;
 
 public class ScreeOffOnReceiver extends BroadcastReceiver {
     private final String TAG = "CatchScreeOffOn";
     public final static String SCREEN_ON = "android.intent.action.SCREEN_ON";
     public final static String SCREEN_OFF = "android.intent.action.SCREEN_OFF";
-
-    private UpdateWithScreenResume updateWithScreenResume;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -20,15 +18,13 @@ public class ScreeOffOnReceiver extends BroadcastReceiver {
 
         switch (intent.getAction()) {
             case SCREEN_ON:
-                updateWithScreenResume.screenON();
+                Log.i(TAG, "onReceive: screen ON");
+                context.startService(UpdateService.getIntentStartService(context));
                 break;
             case SCREEN_OFF:
-                updateWithScreenResume.screenOFF();
+                Log.i(TAG, "onReceive: screen OFF");
                 break;
         }
-    }
 
-    public void setUpdateWithScreenResume(UpdateWithScreenResume updateWithScreenResume) {
-        this.updateWithScreenResume = updateWithScreenResume;
     }
 }

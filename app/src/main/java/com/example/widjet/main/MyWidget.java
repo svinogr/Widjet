@@ -1,16 +1,19 @@
 package com.example.widjet.main;
 
 import android.app.ActivityManager;
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
+import com.example.widjet.main.broadcast.BootReceiver;
+import com.example.widjet.main.broadcast.ScreeOffOnReceiver;
+import com.example.widjet.main.broadcast.TimeChangeReceiver;
 import com.example.widjet.main.database.App;
 import com.example.widjet.main.database.dao.DataDao;
 import com.example.widjet.main.database.dao.PrazdnikDao;
@@ -32,27 +35,20 @@ public class MyWidget extends AppWidgetProvider {
     public final static String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
     private final String TAG = "MyWidget";
 
-    public static PendingIntent createUpdatePendIntent(Context context) {
+    private TimeChangeReceiver timeChangeReceiver;
+    private ScreeOffOnReceiver screeOffOnReceiver;
+    private BootReceiver bootReceiver;
+
+
+
+/*    public static PendingIntent createUpdatePendIntent(Context context) {
         Intent intent = new Intent(UPDATE_WIDGET);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
+    }*/
 
 
     private Intent getUpdateServiceIntent(Context context) {
         return new Intent(context, UpdateService.class);
-    }
-
-    //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
-    @Override
-    public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
-        updateViews(context);
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
-    }
-
-    //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
-    @Override
-    public void onDeleted(Context context, int[] appWidgetIds) {
-        super.onDeleted(context, appWidgetIds);
     }
 
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
@@ -66,20 +62,46 @@ public class MyWidget extends AppWidgetProvider {
             Log.i(TAG, "startOrStopService: " + myServiceRunning);
             Log.i(TAG, "startOrStopService: to run");
         }
+
+        createReceivers(context.getApplicationContext());
+
     }
 
-    @Deprecated
-    private void startOrStopService(Context context) {
-        boolean myServiceRunning = isMyServiceRunning(UpdateService.class, context);
-        Log.i(TAG, "startOrStopService: " + myServiceRunning);
-        if (myServiceRunning) {
-            context.stopService(new Intent(context, UpdateService.class));
-            Log.i(TAG, "startOrStopService: to stop");
+    private void createReceivers(Context context) {
+        timeChangeReceiver = new TimeChangeReceiver();
+        IntentFilter timeIntentFilter = new IntentFilter();
+        timeIntentFilter.addAction(TimeChangeReceiver.TIME_SET);
+        timeIntentFilter.addAction(TimeChangeReceiver.TIME_TICK);
+        context.registerReceiver(timeChangeReceiver, timeIntentFilter);
 
-        } else {
-            context.startService(new Intent(context, UpdateService.class));
-            Log.i(TAG, "startOrStopService: to run");
-        }
+        screeOffOnReceiver = new ScreeOffOnReceiver();
+        IntentFilter screenIntentFilter = new IntentFilter();
+        screenIntentFilter.addAction(ScreeOffOnReceiver.SCREEN_ON);
+        screenIntentFilter.addAction(ScreeOffOnReceiver.SCREEN_OFF);
+        context.registerReceiver(screeOffOnReceiver, screenIntentFilter);
+
+        bootReceiver = new BootReceiver();
+        context.registerReceiver(bootReceiver, new IntentFilter(BootReceiver.SCREEN_BOOT));
+
+
+    }
+
+    private void unRegistrationReceivers(Context context) {
+        context.unregisterReceiver(timeChangeReceiver);
+        context.unregisterReceiver(screeOffOnReceiver);
+    }
+
+    //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
+    @Override
+    public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
+        updateViews(context);
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+    }
+
+    //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        super.onDeleted(context, appWidgetIds);
     }
 
     @Override
@@ -110,7 +132,9 @@ public class MyWidget extends AppWidgetProvider {
         calendar.setTime(new Date());
 
         views.setTextViewText(R.id.timeImg,
-                calendar.get(Calendar.HOUR_OF_DAY) + ":" + (calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : calendar.get(Calendar.MINUTE)));
+                (calendar.get(Calendar.HOUR_OF_DAY)) < 10 ? "0" + calendar.get(Calendar.HOUR_OF_DAY) : calendar.get(Calendar.HOUR_OF_DAY)
+                        +
+                        ":" + (calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : calendar.get(Calendar.MINUTE)));
         views.setTextViewText(R.id.dateImg, simpleDateFormat.format(calendar.getTime()));
 
         views.setTextViewText(R.id.textImg, prazdnik.getName());
@@ -129,6 +153,8 @@ public class MyWidget extends AppWidgetProvider {
             context.stopService(getUpdateServiceIntent(context));
             Log.i(TAG, "startOrStopService: to stop");
         }
+
+        //  unRegistrationReceivers(context.getApplicationContext());
 
         super.onDisabled(context);
     }
