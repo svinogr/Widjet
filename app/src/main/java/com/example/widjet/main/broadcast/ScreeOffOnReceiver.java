@@ -7,11 +7,10 @@ import android.util.Log;
 
 import com.example.widjet.main.service.UpdateWithScreenResume;
 
-public class CatchScreeOffOnBootReceiver extends BroadcastReceiver {
-    private final String TAG = "CatchScreeOffOnBoot";
-    private final String SCREEN_ON = "android.intent.action.SCREEN_ON";
-    private final String SCREEN_OFF = "android.intent.action.SCREEN_OFF";
-    private final String SCREEN_BOOT = "android.intent.action.BOOT_COMPLETED";
+public class ScreeOffOnReceiver extends BroadcastReceiver {
+    private final String TAG = "CatchScreeOffOn";
+    public final static String SCREEN_ON = "android.intent.action.SCREEN_ON";
+    public final static String SCREEN_OFF = "android.intent.action.SCREEN_OFF";
 
     private UpdateWithScreenResume updateWithScreenResume;
 
@@ -21,7 +20,6 @@ public class CatchScreeOffOnBootReceiver extends BroadcastReceiver {
 
         switch (intent.getAction()) {
             case SCREEN_ON:
-            case SCREEN_BOOT:
                 updateWithScreenResume.screenON();
                 break;
             case SCREEN_OFF:

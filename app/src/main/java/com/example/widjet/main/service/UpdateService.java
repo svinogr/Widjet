@@ -1,6 +1,5 @@
 package com.example.widjet.main.service;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,13 +9,13 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.widjet.main.MyWidget;
-import com.example.widjet.main.broadcast.CatchScreeOffOnBootReceiver;
-import com.example.widjet.main.broadcast.CatchTickIntentReceiver;
+import com.example.widjet.main.broadcast.ScreeOffOnReceiver;
+import com.example.widjet.main.broadcast.TimeChangeReceiver;
 
 public class UpdateService extends Service implements UpdateWithClock, UpdateWithScreenResume {
     private final String TAG = "UpdateService";
-    private CatchTickIntentReceiver catchTickIntentReceiver;
-    private CatchScreeOffOnBootReceiver catchScreeOffOnBootReceiver;
+    private TimeChangeReceiver timeChangeReceiver;
+    private ScreeOffOnReceiver catchScreeOffOnBootReceiver;
 
     @Nullable
     @Override
@@ -28,21 +27,24 @@ public class UpdateService extends Service implements UpdateWithClock, UpdateWit
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate: " + "service run");
-        catchTickIntentReceiver = new CatchTickIntentReceiver();
-        catchTickIntentReceiver.setUpdateWithClock(this);
-        registerReceiver(catchTickIntentReceiver, new IntentFilter("android.intent.action.TIME_TICK"));
+        timeChangeReceiver = new TimeChangeReceiver();
+        timeChangeReceiver.setUpdateWithClock(this);
+        IntentFilter timeIntentFilter = new IntentFilter();
+        timeIntentFilter.addAction(TimeChangeReceiver.TIME_SET);
+        timeIntentFilter.addAction(TimeChangeReceiver.TIME_TICK);
+        registerReceiver(timeChangeReceiver, timeIntentFilter);
 
-        catchScreeOffOnBootReceiver = new CatchScreeOffOnBootReceiver();
+        catchScreeOffOnBootReceiver = new ScreeOffOnReceiver();
         catchScreeOffOnBootReceiver.setUpdateWithScreenResume(this);
         IntentFilter screenIntentFilter = new IntentFilter();
-        screenIntentFilter.addAction("android.intent.action.SCREEN_ON");
-        screenIntentFilter.addAction("android.intent.action.SCREEN_OFF");
-        screenIntentFilter.addAction("android.intent.action.BOOT_COMPLETED");
+        screenIntentFilter.addAction(ScreeOffOnReceiver.SCREEN_ON);
+        screenIntentFilter.addAction(ScreeOffOnReceiver.SCREEN_OFF);
         registerReceiver(catchScreeOffOnBootReceiver, screenIntentFilter);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "onStartCommand: ");
         return START_REDELIVER_INTENT;
     }
 
@@ -52,29 +54,33 @@ public class UpdateService extends Service implements UpdateWithClock, UpdateWit
     }
 
     private void sendIntentToUpdateWidget() {
-        PendingIntent updatePendIntent = MyWidget.createUpdatePendIntent(getApplicationContext());
+        Log.i(TAG, "sendIntentToUpdateWidget: ");
+        getApplicationContext().sendBroadcast(new Intent(MyWidget.UPDATE_WIDGET));
+    /*    PendingIntent updatePendIntent = MyWidget.createUpdatePendIntent(getApplicationContext());
 
         try {
             updatePendIntent.send();
         } catch (PendingIntent.CanceledException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Override
     public void screenOFF() {
-        unregisterReceiver(catchTickIntentReceiver);
+        Log.i(TAG, "screenOFF: in update method");
+        unregisterReceiver(timeChangeReceiver);
     }
 
     @Override
     public void screenON() {
         sendIntentToUpdateWidget();
-        registerReceiver(catchTickIntentReceiver, new IntentFilter("android.intent.action.TIME_TICK"));
+        registerReceiver(timeChangeReceiver, new IntentFilter(TimeChangeReceiver.TIME_TICK));
     }
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(catchTickIntentReceiver);
+        Log.i(TAG, "onDestroy: ");
+        unregisterReceiver(timeChangeReceiver);
         unregisterReceiver(catchScreeOffOnBootReceiver);
         super.onDestroy();
     }

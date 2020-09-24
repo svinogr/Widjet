@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.example.widjet.R;
 import com.example.widjet.main.database.App;
@@ -30,12 +29,17 @@ import java.util.List;
 public class MyWidget extends AppWidgetProvider {
     //TODO сделать изменение праздника только после изменения даты в системе
     private Date time;
-    private final static String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
+    public final static String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
     private final String TAG = "MyWidget";
 
     public static PendingIntent createUpdatePendIntent(Context context) {
         Intent intent = new Intent(UPDATE_WIDGET);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+
+    private Intent getUpdateServiceIntent(Context context) {
+        return new Intent(context, UpdateService.class);
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
@@ -55,9 +59,16 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
-        startOrStopService(context);
+        boolean myServiceRunning = isMyServiceRunning(UpdateService.class, context);
+
+        if (!myServiceRunning) {
+            context.startService(getUpdateServiceIntent(context));
+            Log.i(TAG, "startOrStopService: " + myServiceRunning);
+            Log.i(TAG, "startOrStopService: to run");
+        }
     }
 
+    @Deprecated
     private void startOrStopService(Context context) {
         boolean myServiceRunning = isMyServiceRunning(UpdateService.class, context);
         Log.i(TAG, "startOrStopService: " + myServiceRunning);
@@ -79,12 +90,7 @@ public class MyWidget extends AppWidgetProvider {
             updateViews(context);
         }
 
-        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
-            Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();
-        }
-
-        Log.i(TAG, "onReceive: "+ intent.getAction());
-
+        Log.i(TAG, "onReceive: " + intent.getAction());
 
         super.onReceive(context, intent);
     }
@@ -117,7 +123,13 @@ public class MyWidget extends AppWidgetProvider {
     //onDisabled вызывается при удалении последнего экземпляра виджета.
     @Override
     public void onDisabled(Context context) {
-        startOrStopService(context);
+        boolean myServiceRunning = isMyServiceRunning(UpdateService.class, context);
+
+        if (myServiceRunning) {
+            context.stopService(getUpdateServiceIntent(context));
+            Log.i(TAG, "startOrStopService: to stop");
+        }
+
         super.onDisabled(context);
     }
 
@@ -125,6 +137,7 @@ public class MyWidget extends AppWidgetProvider {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
+
                 return true;
             }
         }
