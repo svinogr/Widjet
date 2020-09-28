@@ -5,7 +5,7 @@ import com.example.widjet.main.database.entity.PrazdnikEntity;
 import java.util.Arrays;
 
 public class PrazdnikDTO {
-
+    private long id;
     private String name;
     private String description;
     private String img;
@@ -19,6 +19,7 @@ public class PrazdnikDTO {
         this.name = prazdnikEntity.getName();
         this.description = prazdnikEntity.getDescription();
         this.img = prazdnikEntity.getImg();
+        this.id = prazdnikEntity.getId();
     }
 
     public PrazdnikDTO(String name) {
@@ -65,10 +66,19 @@ public class PrazdnikDTO {
         this.date = date;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "PrazdnikDTO{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", img='" + img + '\'' +
                 ", post=" + post +

@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MyWidget extends AppWidgetProvider {
     //TODO сделать изменение праздника только после изменения даты в системе
@@ -64,7 +65,6 @@ public class MyWidget extends AppWidgetProvider {
         }
 
         createReceivers(context.getApplicationContext());
-
     }
 
     private void createReceivers(Context context) {
@@ -82,8 +82,6 @@ public class MyWidget extends AppWidgetProvider {
 
         bootReceiver = new BootReceiver();
         context.registerReceiver(bootReceiver, new IntentFilter(BootReceiver.SCREEN_BOOT));
-
-
     }
 
     private void unRegistrationReceivers(Context context) {
@@ -94,7 +92,9 @@ public class MyWidget extends AppWidgetProvider {
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
+        // возможно здесь стоит запустить сервис
         updateViews(context);
+
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
@@ -109,9 +109,9 @@ public class MyWidget extends AppWidgetProvider {
 
         if (UPDATE_WIDGET.equals(intent.getAction())) {
             //Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();
-            updateViews(context);
-        }
 
+        }
+        updateViews(context);
         Log.i(TAG, "onReceive: " + intent.getAction());
 
         super.onReceive(context, intent);
@@ -125,22 +125,26 @@ public class MyWidget extends AppWidgetProvider {
     }
 
     private RemoteViews updateTimeWidget(Context context) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         PrazdnikDTO prazdnik = getPrazdnik();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());
 
-        views.setTextViewText(R.id.timeImg,
-                (calendar.get(Calendar.HOUR_OF_DAY)) < 10 ? "0" + calendar.get(Calendar.HOUR_OF_DAY) : calendar.get(Calendar.HOUR_OF_DAY)
-                        +
-                        ":" + (calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : calendar.get(Calendar.MINUTE)));
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+        String hour = calendar.get(Calendar.HOUR_OF_DAY) < 10 ? "0" + calendar.get(Calendar.HOUR_OF_DAY) : String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String minute = calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : String.valueOf(calendar.get(Calendar.MINUTE));
+        views.setTextViewText(R.id.timeImg, hour + ":" + minute);
         views.setTextViewText(R.id.dateImg, simpleDateFormat.format(calendar.getTime()));
 
         views.setTextViewText(R.id.textImg, prazdnik.getName());
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
+        Log.i(TAG, "updateTimeWidget: " + prazdnik);
+
+        views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+        views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+
         return views;
     }
 
@@ -177,12 +181,15 @@ public class MyWidget extends AppWidgetProvider {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0); // facking calendar need set millsecond every time
+       calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         time = calendar.getTime();
 
         return getPrazdnikByDate(time);
     }
 
     private PrazdnikDTO getPrazdnikByDate(Date date) {
+        Log.i(TAG, "getPrazdnikByDate: " + date + " - " + date.getTime());
+        Log.i(TAG, "getPrazdnikByDate: " +new Date() +" - " + new Date().getTime());
         PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
         DataDao dataDao = prazdnikDataBase.dataDao();
 
@@ -221,4 +228,5 @@ public class MyWidget extends AppWidgetProvider {
         prazdnikEntity.setId(-1);
         return prazdnikEntity;
     }
+
 }
