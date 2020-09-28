@@ -2,28 +2,28 @@ package com.example.widjet.main.database.converter;
 
 import androidx.room.TypeConverter;
 
-import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class DateConverter {
-
+    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
     @TypeConverter
-    public  Long fromDate(Date date) {
-        System.out.println(date);
-        System.out.println(date.getTime());
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR,0 );
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
+    public String fromDate(Date date) {
 
-        return calendar.getTime().getTime();
+        String strDate = dateFormat.format(date);
+        return strDate;
+
     }
 
     @TypeConverter
-    public Date fromTimestamp(Long value) {
-        return value == null ? null : new Date(value);
+    public Date fromTimestamp(String value) {
+        try {
+            return value == null ? null : dateFormat.parse(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
