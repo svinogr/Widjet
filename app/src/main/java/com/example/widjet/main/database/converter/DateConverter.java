@@ -8,7 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateConverter {
-    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+   public static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
     @TypeConverter
     public String fromDate(Date date) {
 

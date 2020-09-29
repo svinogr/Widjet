@@ -15,6 +15,7 @@ import com.example.widjet.main.broadcast.BootReceiver;
 import com.example.widjet.main.broadcast.ScreeOffOnReceiver;
 import com.example.widjet.main.broadcast.TimeChangeReceiver;
 import com.example.widjet.main.database.App;
+import com.example.widjet.main.database.converter.DateConverter;
 import com.example.widjet.main.database.dao.DataDao;
 import com.example.widjet.main.database.dao.PrazdnikDao;
 import com.example.widjet.main.database.database.PrazdnikDataBase;
@@ -106,6 +107,7 @@ public class MyWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
 
         if (UPDATE_WIDGET.equals(intent.getAction())) {
             //Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();
@@ -114,7 +116,6 @@ public class MyWidget extends AppWidgetProvider {
         updateViews(context);
         Log.i(TAG, "onReceive: " + intent.getAction());
 
-        super.onReceive(context, intent);
     }
 
     private void updateViews(Context context) {
@@ -184,11 +185,12 @@ public class MyWidget extends AppWidgetProvider {
        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         time = calendar.getTime();
 
-        return getPrazdnikByDate(time);
+        //return getPrazdnikByDate(time);
+        return getPrazdnikByDate(DateConverter.dateFormat.format(new Date()));
     }
 
-    private PrazdnikDTO getPrazdnikByDate(Date date) {
-        Log.i(TAG, "getPrazdnikByDate: " + date + " - " + date.getTime());
+    private PrazdnikDTO getPrazdnikByDate(String date) {
+        Log.i(TAG, "getPrazdnikByDate: " + date + " - " + date);
         Log.i(TAG, "getPrazdnikByDate: " +new Date() +" - " + new Date().getTime());
         PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
         DataDao dataDao = prazdnikDataBase.dataDao();

@@ -19,14 +19,15 @@ import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
 
 public class DescriptionActivity extends AppCompatActivity {
-    private final String TAG = "DescriptionActivity";
+    private static final String TAG = "DescriptionActivity";
     public static final String ID = "id";
 
     public static PendingIntent getActivityIntent(Context context, long idPrasdnik) {
         Intent intent = new Intent(context, DescriptionActivity.class);
+        Log.i(TAG, "getActivityIntent: " +idPrasdnik);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
         intent.putExtra(ID, idPrasdnik);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) idPrasdnik, intent, 0);
         return pendingIntent;
     }
 
@@ -48,10 +49,11 @@ public class DescriptionActivity extends AppCompatActivity {
 
         TextView description = findViewById(R.id.description_description_activity);
         description.setText(prazdnik.getDescription());
-        Log.i(TAG, "onCreate: ");
-        
+
         setResult(RESULT_CANCELED);
     }
+
+
 
     private PrazdnikDTO getPrazdnik(long id) {
         if(id == -1 ) {
@@ -71,5 +73,26 @@ public class DescriptionActivity extends AppCompatActivity {
         prazdnikEntity.setImg(getString(R.string.default_name_image));
         prazdnikEntity.setId(-1);
         return new PrazdnikDTO(prazdnikEntity);
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(TAG, "onStop: ");
+        super.onStop();
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+       // App.getInstance().getPrazdnikDataBase().close();
+        Log.i(TAG, "onDestroy: ");
+        super.onDestroy();
     }
 }
