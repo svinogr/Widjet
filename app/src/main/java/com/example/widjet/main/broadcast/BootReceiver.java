@@ -13,14 +13,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-     /*   Intent intentStartUpdateService = new Intent(context, UpdateService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intentStartUpdateService);
-        } else {
-            context.startService(intentStartUpdateService);
-        }*/
         Log.i(TAG, " started");
-
         context.startService(UpdateService.getIntentStartService(context));
     }
 }

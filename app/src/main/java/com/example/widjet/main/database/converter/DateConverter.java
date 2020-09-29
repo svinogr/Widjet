@@ -12,10 +12,9 @@ public class DateConverter {
 
     @TypeConverter
     public String fromDate(Date date) {
-
         String strDate = dateFormat.format(date);
-        return strDate;
 
+        return strDate;
     }
 
     @TypeConverter
@@ -24,6 +23,7 @@ public class DateConverter {
             return value == null ? null : dateFormat.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
+
             return null;
         }
     }

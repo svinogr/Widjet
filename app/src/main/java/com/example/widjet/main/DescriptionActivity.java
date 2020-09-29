@@ -53,8 +53,6 @@ public class DescriptionActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED);
     }
 
-
-
     private PrazdnikDTO getPrazdnik(long id) {
         if(id == -1 ) {
             return defaultPrasdnik();

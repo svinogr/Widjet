@@ -24,10 +24,7 @@ public static final String TIME_TICK = "android.intent.action.TIME_TICK";
 
                 Log.i(TAG, "onReceive: " + "Tik Tak");
                 break;
-
         }
-
         context.startService(UpdateService.getIntentStartService(context));
     }
-
 }
