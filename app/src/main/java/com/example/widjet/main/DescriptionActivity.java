@@ -1,7 +1,6 @@
 package com.example.widjet.main;
 
 import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +24,7 @@ public class DescriptionActivity extends AppCompatActivity {
     public static PendingIntent getActivityIntent(Context context, long idPrasdnik) {
         Intent intent = new Intent(context, DescriptionActivity.class);
         Log.i(TAG, "getActivityIntent: " +idPrasdnik);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+      //  intent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
         intent.putExtra(ID, idPrasdnik);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) idPrasdnik, intent, 0);
         return pendingIntent;
@@ -80,12 +79,14 @@ public class DescriptionActivity extends AppCompatActivity {
         finish();
     }
 
+/*
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         moveTaskToBack(true);
         finish();
     }
+*/
 
     @Override
     protected void onDestroy() {

@@ -28,6 +28,7 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        Log.i(TAG, "onCreate: ");
         super.onCreate();
 
         instance = this;
@@ -49,6 +50,12 @@ public class App extends Application {
         }
 
         registerMainReceiver();
+    }
+
+    @Override
+    public void onTerminate() {
+        Log.i(TAG, "onTerminate: ");
+        super.onTerminate();
     }
 
     private void registerMainReceiver() {

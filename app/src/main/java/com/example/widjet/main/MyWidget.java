@@ -1,6 +1,5 @@
 package com.example.widjet.main;
 
-import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -19,7 +18,6 @@ import com.example.widjet.main.database.database.PrazdnikDataBase;
 import com.example.widjet.main.database.entity.DataEntity;
 import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
-import com.example.widjet.main.service.UpdateService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,26 +26,27 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
-    public final static String UPDATE_WIDGET = "com.example.widjet.main.MyWidget.UPDATE_WIDGET";
+    public final static String UPDATE_WIDGET = "android.appwidget.action.APPWIDGET_UPDATE";
     private final String TAG = "MyWidget";
 
-    private Intent getUpdateServiceIntent(Context context) {
-        return new Intent(context, UpdateService.class);
-    }
-
+    /*   private Intent getUpdateServiceIntent(Context context) {
+           return new Intent(context, UpdateService.class);
+       }
+   */
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
-
-       context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
+        context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
-        // возможно здесь стоит запустить сервис
-        updateViews(context);
+        for (int i : appWidgetIds) {
+            RemoteViews views = getRemoteView(context);
+            appWidgetManager.updateAppWidget(i, views);
+        }
 
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
@@ -62,18 +61,20 @@ public class MyWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        updateViews(context);
         Log.i(TAG, "onReceive: " + intent.getAction());
+        Log.i(TAG, "onReceive: " + intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID));
+
+        RemoteViews remoteViews = getRemoteView(context);
+        ComponentName componentName = new ComponentName(context, MyWidget.class);
+        AppWidgetManager instance = AppWidgetManager.getInstance(context);
+        instance.updateAppWidget(componentName, remoteViews);
+
+        //  updateViews(context, appWidgetManager, i);
+        // updateViews(context);
     }
 
-    private void updateViews(Context context) {
-        RemoteViews views = updateTimeWidget(context);
-        ComponentName widget = new ComponentName(context, MyWidget.class);
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        appWidgetManager.updateAppWidget(widget, views);
-    }
 
-    private RemoteViews updateTimeWidget(Context context) {
+    private RemoteViews getRemoteView(Context context) {
         PrazdnikDTO prazdnik = getPrazdnik();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Calendar calendar = new GregorianCalendar();
@@ -89,30 +90,24 @@ public class MyWidget extends AppWidgetProvider {
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
-        Log.i(TAG, "updateTimeWidget: " + prazdnik);
-
         views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
         views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+
+        Log.i(TAG, "updateTimeWidget: " + prazdnik);
 
         return views;
     }
 
+
     //onDisabled вызывается при удалении последнего экземпляра виджета.
     @Override
     public void onDisabled(Context context) {
-        boolean myServiceRunning = isMyServiceRunning(UpdateService.class, context);
-
-        if (myServiceRunning) {
-            context.stopService(getUpdateServiceIntent(context));
-            Log.i(TAG, "startOrStopService: to stop");
-        }
-
-       context.sendBroadcast(new Intent(MainBroadcastReceiver.UN_REGISTER_RECEIVER));
+        context.sendBroadcast(new Intent(MainBroadcastReceiver.UN_REGISTER_RECEIVER));
 
         super.onDisabled(context);
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+/*    private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -122,7 +117,7 @@ public class MyWidget extends AppWidgetProvider {
         }
 
         return false;
-    }
+    }*/
 
     private PrazdnikDTO getPrazdnik() {
         return getPrazdnikByDate(DateConverter.dateFormat.format(new Date()));
@@ -130,7 +125,7 @@ public class MyWidget extends AppWidgetProvider {
 
     private PrazdnikDTO getPrazdnikByDate(String date) {
         Log.i(TAG, "getPrazdnikByDate: " + date + " - " + date);
-        Log.i(TAG, "getPrazdnikByDate: " +new Date() +" - " + new Date().getTime());
+        Log.i(TAG, "getPrazdnikByDate: " + new Date() + " - " + new Date().getTime());
         PrazdnikDataBase prazdnikDataBase = App.getInstance().getPrazdnikDataBase();
         DataDao dataDao = prazdnikDataBase.dataDao();
 

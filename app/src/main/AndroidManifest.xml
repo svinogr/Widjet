@@ -14,6 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".main.DescriptionActivity"
+            android:allowEmbedded="true"
             android:label="@string/title_activity_description"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -37,18 +38,15 @@
             </intent-filter>
         </receiver>
 
-
-        <receiver
-            android:name=".main.broadcast.ScreeOffOnReceiver"
-            android:enabled="true"
-            android:exported="true" />
         <receiver
             android:name=".main.MyWidget"
             android:icon="@android:drawable/btn_plus"
             android:label="@string/widget_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+<!--
                 <action android:name="com.example.widjet.main.MyWidget.UPDATE_WIDGET" />
+-->
             </intent-filter>
 
             <meta-data

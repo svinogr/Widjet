@@ -7,12 +7,14 @@ import android.util.Log;
 
 import com.example.widjet.main.service.UpdateService;
 
-public class TimeChangeReceiver extends BroadcastReceiver {
-    private final String TAG = "TimeChangeReceiver";
+public class TickTackReceiver extends BroadcastReceiver {
+private final String TAG = "TickTackReceiver";
+
+public static final String TIME_TICK = "android.intent.action.TIME_TICK";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "onReceive: ");
+        Log.i(TAG, "onReceive: Tick Tack");
         context.startService(UpdateService.getIntentStartService(context));
     }
 }
