@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.widjet.main.service.UpdateService;
+import com.example.widjet.main.MyWidget;
 
 public class ScreeOffOnReceiver extends BroadcastReceiver {
     private final String TAG = "CatchScreeOffOn";
@@ -19,7 +19,7 @@ public class ScreeOffOnReceiver extends BroadcastReceiver {
         switch (intent.getAction()) {
             case SCREEN_ON:
                 Log.i(TAG, "onReceive: screen ON");
-                context.startService(UpdateService.getIntentStartService(context));
+                context.sendBroadcast(new Intent(MyWidget.UPDATE_WIDGET));
                 break;
             case SCREEN_OFF:
                 Log.i(TAG, "onReceive: screen OFF");

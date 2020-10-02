@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.widjet.main.service.UpdateService;
+import com.example.widjet.main.MyWidget;
 
 public class BootReceiver extends BroadcastReceiver {
     private final String TAG = "BootReceiver";
@@ -14,6 +14,6 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, " started");
-        context.startService(UpdateService.getIntentStartService(context));
+        context.sendBroadcast(new Intent(MyWidget.UPDATE_WIDGET));
     }
 }
