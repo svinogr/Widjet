@@ -17,12 +17,15 @@ import com.example.widjet.main.database.database.PrazdnikDataBase;
 import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
 
+import static android.content.Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS;
+
 public class DescriptionActivity extends AppCompatActivity {
     private static final String TAG = "DescriptionActivity";
     public static final String ID = "id";
 
     public static PendingIntent getActivityIntent(Context context, long idPrasdnik) {
         Intent intent = new Intent(context, DescriptionActivity.class);
+        intent.setFlags(FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         Log.i(TAG, "getActivityIntent: " +idPrasdnik);
       //  intent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
         intent.putExtra(ID, idPrasdnik);
