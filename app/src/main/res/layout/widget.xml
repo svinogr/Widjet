@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <TextClock
+        android:format24Hour="hh:mm"
         android:id="@+id/timeImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="50sp"
-        tool:text="20:20"
         android:textColor="@color/timeColor"/>
 
     <TextView

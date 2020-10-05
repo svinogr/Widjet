@@ -1,12 +1,10 @@
 package com.example.widjet.main.database;
 
 import android.app.Application;
-import android.content.IntentFilter;
 import android.util.Log;
 
 import androidx.room.Room;
 
-import com.example.widjet.main.broadcast.MainBroadcastReceiver;
 import com.example.widjet.main.database.database.PrazdnikDataBase;
 
 import java.io.File;
@@ -49,7 +47,7 @@ public class App extends Application {
             System.out.println("файл уже есть");
         }
 
-        registerMainReceiver();
+
     }
 
     @Override
@@ -58,14 +56,5 @@ public class App extends Application {
         super.onTerminate();
     }
 
-    private void registerMainReceiver() {
-        Log.i(TAG, "registerMainReceiver: ");
-        MainBroadcastReceiver mainBroadcastReceiver = new MainBroadcastReceiver(getApplicationContext());
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MainBroadcastReceiver.REGISTER_RECEIVER);
-        intentFilter.addAction(MainBroadcastReceiver.UN_REGISTER_RECEIVER);
-
-        registerReceiver(mainBroadcastReceiver, intentFilter);
-    }
 }

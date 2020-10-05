@@ -30,23 +30,12 @@
         </receiver>
 
         <receiver
-            android:name=".main.broadcast.TimeChangeReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.TIME_SET" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name=".main.MyWidget"
             android:icon="@android:drawable/btn_plus"
             android:label="@string/widget_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-<!--
-                <action android:name="com.example.widjet.main.MyWidget.UPDATE_WIDGET" />
--->
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTION" />
             </intent-filter>
 
             <meta-data

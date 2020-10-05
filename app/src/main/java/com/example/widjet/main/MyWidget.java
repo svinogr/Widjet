@@ -9,7 +9,6 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
-import com.example.widjet.main.broadcast.MainBroadcastReceiver;
 import com.example.widjet.main.database.App;
 import com.example.widjet.main.database.converter.DateConverter;
 import com.example.widjet.main.database.dao.DataDao;
@@ -37,7 +36,7 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
-        context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
+        //   context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
@@ -102,8 +101,8 @@ public class MyWidget extends AppWidgetProvider {
     //onDisabled вызывается при удалении последнего экземпляра виджета.
     @Override
     public void onDisabled(Context context) {
-        context.sendBroadcast(new Intent(MainBroadcastReceiver.UN_REGISTER_RECEIVER));
-
+        //context.sendBroadcast(new Intent(MainBroadcastReceiver.UN_REGISTER_RECEIVER));
+        context.getApplicationContext().unregisterReceiver(this);
         super.onDisabled(context);
     }
 
