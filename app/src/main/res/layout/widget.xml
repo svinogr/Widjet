@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <TextClock
-        android:format24Hour="hh:mm"
+        android:format12Hour="kk:mm"
         android:id="@+id/timeImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
