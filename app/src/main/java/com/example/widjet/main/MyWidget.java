@@ -32,7 +32,7 @@ public class MyWidget extends AppWidgetProvider {
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
     public void onEnabled(final Context context) {
-        context.getApplicationContext().registerReceiver(new TimeBroadcast(), new IntentFilter("android.intent.action.DATE_CHANGED"));
+        context.getApplicationContext().registerReceiver(new TimeBroadcast(), new IntentFilter("android.intent.action.TIME_TICK"));
         super.onEnabled(context);//   context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
     }
 
@@ -71,6 +71,7 @@ public class MyWidget extends AppWidgetProvider {
         calendar.setTime(new Date());
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+
         String hour = calendar.get(Calendar.HOUR_OF_DAY) < 10 ? "0" + calendar.get(Calendar.HOUR_OF_DAY) : String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
         String minute = calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : String.valueOf(calendar.get(Calendar.MINUTE));
 

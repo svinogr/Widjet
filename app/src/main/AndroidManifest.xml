@@ -19,6 +19,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
+            android:name=".main.broadcast.TimeBroadcast"
+            android:enabled="true"
+            android:exported="true">
+
+        </receiver>
+        <receiver
             android:name=".main.broadcast.BootReceiver"
             android:enabled="true"
             android:exported="true"

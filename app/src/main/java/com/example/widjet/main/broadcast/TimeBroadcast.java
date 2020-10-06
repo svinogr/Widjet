@@ -1,13 +1,17 @@
 package com.example.widjet.main.broadcast;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class TimeBroadcast extends BootReceiver {
+import com.example.widjet.main.MyWidget;
+
+public class TimeBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("TimeBroadcast", "onReceive: " + intent.getAction());
-        super.onReceive(context, intent);
+        context.sendBroadcast(new Intent(MyWidget.UPDATE_WIDGET));
+
     }
 }
