@@ -2,9 +2,9 @@ package com.example.widjet.main;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -24,19 +24,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class MyWidget extends AppWidgetProvider {
+public class MyWidget extends AppWidgetProvider implements WidgetUpdateInterface {
     public final static String UPDATE_WIDGET = "android.appwidget.action.APPWIDGET_UPDATE";
     private final String TAG = "MyWidget";
+    private TextWatcher textWatcher;
 
-    /*   private Intent getUpdateServiceIntent(Context context) {
-           return new Intent(context, UpdateService.class);
-       }
-   */
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
     public void onEnabled(final Context context) {
-        super.onEnabled(context);
-        //   context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
+        super.onEnabled(context);//   context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
@@ -44,11 +40,13 @@ public class MyWidget extends AppWidgetProvider {
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
         for (int i : appWidgetIds) {
             RemoteViews views = getRemoteView(context);
+
             appWidgetManager.updateAppWidget(i, views);
         }
 
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
+
 
     //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
     @Override
@@ -59,17 +57,6 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-
-        Log.i(TAG, "onReceive: " + intent.getAction());
-        Log.i(TAG, "onReceive: " + intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID));
-
-        RemoteViews remoteViews = getRemoteView(context);
-        ComponentName componentName = new ComponentName(context, MyWidget.class);
-        AppWidgetManager instance = AppWidgetManager.getInstance(context);
-        instance.updateAppWidget(componentName, remoteViews);
-
-        //  updateViews(context, appWidgetManager, i);
-        // updateViews(context);
     }
 
 
@@ -85,12 +72,13 @@ public class MyWidget extends AppWidgetProvider {
         views.setTextViewText(R.id.timeImg, hour + ":" + minute);
         views.setTextViewText(R.id.dateImg, simpleDateFormat.format(calendar.getTime()));
 
+
         views.setTextViewText(R.id.textImg, prazdnik.getName());
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
-        views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
-        views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+    //    views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+      //  views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
 
         Log.i(TAG, "updateTimeWidget: " + prazdnik);
 
@@ -101,22 +89,8 @@ public class MyWidget extends AppWidgetProvider {
     //onDisabled вызывается при удалении последнего экземпляра виджета.
     @Override
     public void onDisabled(Context context) {
-        //context.sendBroadcast(new Intent(MainBroadcastReceiver.UN_REGISTER_RECEIVER));
-        context.getApplicationContext().unregisterReceiver(this);
         super.onDisabled(context);
     }
-
-/*    private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-
-                return true;
-            }
-        }
-
-        return false;
-    }*/
 
     private PrazdnikDTO getPrazdnik() {
         return getPrazdnikByDate(DateConverter.dateFormat.format(new Date()));
@@ -162,5 +136,10 @@ public class MyWidget extends AppWidgetProvider {
         prazdnikEntity.setImg("god");
         prazdnikEntity.setId(-1);
         return prazdnikEntity;
+    }
+
+    @Override
+    public void updateWidgetByDate() {
+
     }
 }

@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.example.widjet.main.CustomTextClock
         android:textAlignment="center"
         android:id="@+id/name_description_activity"
         android:layout_width="match_parent"

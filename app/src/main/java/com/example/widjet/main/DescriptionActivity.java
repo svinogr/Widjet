@@ -82,14 +82,14 @@ public class DescriptionActivity extends AppCompatActivity {
         finish();
     }
 
-/*
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         moveTaskToBack(true);
         finish();
     }
-*/
+
+
 
     @Override
     protected void onDestroy() {
