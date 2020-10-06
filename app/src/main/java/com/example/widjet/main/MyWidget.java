@@ -9,7 +9,6 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
-import com.example.widjet.main.broadcast.TimeBroadcast;
 import com.example.widjet.main.database.App;
 import com.example.widjet.main.database.converter.DateConverter;
 import com.example.widjet.main.database.dao.DataDao;

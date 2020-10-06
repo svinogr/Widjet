@@ -19,22 +19,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
-            android:name=".main.broadcast.TimeBroadcast"
-            android:enabled="true"
-            android:exported="true">
-
-        </receiver>
-        <receiver
-            android:name=".main.broadcast.BootReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name=".main.MyWidget"
             android:icon="@android:drawable/btn_plus"
             android:label="@string/widget_name">
