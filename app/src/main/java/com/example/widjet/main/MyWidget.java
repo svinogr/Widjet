@@ -9,6 +9,9 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
+import com.example.widjet.main.broad.BootReceiver;
+import com.example.widjet.main.broad.ScreeOffOnReceiver;
+import com.example.widjet.main.broad.TimeChangeReceiver;
 import com.example.widjet.main.converter.DateConverter;
 import com.example.widjet.main.dao.DataDao;
 import com.example.widjet.main.dao.PrazdnikDao;
@@ -26,19 +29,48 @@ import java.util.List;
 public class MyWidget extends AppWidgetProvider {
     public final static String UPDATE_WIDGET = "android.appwidget.action.APPWIDGET_UPDATE";
     private final String TAG = "MyWidget";
+    private BootReceiver bootReceiver;
+    private ScreeOffOnReceiver screeOffOnReceiver;
+    private TimeChangeReceiver timeChangeReceiver;
 
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
     public void onEnabled(final Context context) {
-        context.getApplicationContext().registerReceiver(new TimeBroadcast(), new IntentFilter("android.intent.action.TIME_TICK"));
-        super.onEnabled(context);//   context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
+        registerBroadcast(context);
+        super.onEnabled(context);//
+    }
+
+    private void registerBroadcast(Context context) {
+        bootReceiver = new BootReceiver();
+        IntentFilter intentFilterBoot = new IntentFilter();
+        intentFilterBoot.addAction(BootReceiver.SCREEN_BOOT);
+
+        screeOffOnReceiver = new ScreeOffOnReceiver();
+        IntentFilter intentFilterScreen = new IntentFilter();
+        intentFilterScreen.addAction(ScreeOffOnReceiver.SCREEN_ON);
+        intentFilterScreen.addAction(ScreeOffOnReceiver.SCREEN_OFF);
+
+        timeChangeReceiver = new TimeChangeReceiver();
+        IntentFilter intentFilterTime = new IntentFilter();
+        intentFilterTime.addAction(TimeChangeReceiver.TIME_SET);
+        intentFilterTime.addAction(TimeChangeReceiver.TIME_TICK);
+
+
+        context.getApplicationContext().registerReceiver(bootReceiver, intentFilterBoot);
+        context.getApplicationContext().registerReceiver(screeOffOnReceiver, intentFilterScreen);
+        context.getApplicationContext().registerReceiver(timeChangeReceiver, intentFilterTime);
+    }
+
+    private void unregisterBroadcast(Context context) {
+        context.getApplicationContext().unregisterReceiver(bootReceiver);
+        context.getApplicationContext().unregisterReceiver(screeOffOnReceiver);
+        context.getApplicationContext().unregisterReceiver(timeChangeReceiver);
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-
 
         for (int i : appWidgetIds) {
             RemoteViews views = getRemoteView(context);
@@ -47,7 +79,6 @@ public class MyWidget extends AppWidgetProvider {
         }
 
     }
-
 
     //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
     @Override
@@ -91,6 +122,7 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
+        unregisterBroadcast(context);
     }
 
     private PrazdnikDTO getPrazdnik() {
