@@ -4,11 +4,12 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextWatcher;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
+import com.example.widjet.main.broadcast.TimeBroadcast;
 import com.example.widjet.main.database.App;
 import com.example.widjet.main.database.converter.DateConverter;
 import com.example.widjet.main.database.dao.DataDao;
@@ -27,11 +28,11 @@ import java.util.List;
 public class MyWidget extends AppWidgetProvider {
     public final static String UPDATE_WIDGET = "android.appwidget.action.APPWIDGET_UPDATE";
     private final String TAG = "MyWidget";
-    private TextWatcher textWatcher;
 
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
     public void onEnabled(final Context context) {
+        context.getApplicationContext().registerReceiver(new TimeBroadcast(), new IntentFilter("android.intent.action.DATE_CHANGED"));
         super.onEnabled(context);//   context.sendBroadcast(new Intent(MainBroadcastReceiver.REGISTER_RECEIVER));
     }
 
@@ -39,7 +40,7 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        context.startService(new Intent(context, MyService.class));
+
 
         for (int i : appWidgetIds) {
             RemoteViews views = getRemoteView(context);
@@ -58,8 +59,8 @@ public class MyWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
         Log.i(TAG, "onReceive: " + intent.getAction());
+        super.onReceive(context, intent);
     }
 
 
@@ -77,9 +78,10 @@ public class MyWidget extends AppWidgetProvider {
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
+
         views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
         views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
-
+        ;
         Log.i(TAG, "updateTimeWidget: " + prazdnik);
 
         return views;
