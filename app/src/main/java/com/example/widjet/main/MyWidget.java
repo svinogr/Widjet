@@ -86,10 +86,8 @@ public class MyWidget extends AppWidgetProvider {
 
         for (int i : appWidgetIds) {
             RemoteViews views = getRemoteView(context);
-
             appWidgetManager.updateAppWidget(i, views);
         }
-
     }
 
     //onDeleted вызывается при удалении каждого экземпляра виджета. На вход, кроме контекста, метод получает список ID экземпляров виджетов, которые удаляются.
@@ -117,9 +115,8 @@ public class MyWidget extends AppWidgetProvider {
 
     void updateWidget(Context context, AppWidgetManager appWidgetManager,
                       int appWidgetId) {
-        RemoteViews rv = getRemoteView(context);
-
-        appWidgetManager.updateAppWidget(appWidgetId, rv);
+        RemoteViews views = getRemoteView(context);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
 
@@ -152,12 +149,12 @@ public class MyWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
+
         unregisterBroadcast(context);
-
-
         Intent intent = new Intent(context, MyWidget.class);
         intent.setAction(UPDATE_WIDGET);
         PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pIntent);
