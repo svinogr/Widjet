@@ -16,15 +16,12 @@ public class TimeChangeReceiver extends BroadcastReceiver {
         switch (intent.getAction()) {
             case TIME_SET:
                 Log.i(TAG, "onReceive: " + "Time change");
-
                 break;
             case TIME_TICK:
-
                 Log.i(TAG, "onReceive: " + "Tik Tak");
                 break;
         }
 
         context.sendBroadcast(new Intent("android.appwidget.action.APPWIDGET_UPDATE"));
     }
-
 }

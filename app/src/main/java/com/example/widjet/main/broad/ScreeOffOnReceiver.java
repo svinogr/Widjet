@@ -23,6 +23,5 @@ public class ScreeOffOnReceiver extends BroadcastReceiver {
                 Log.i(TAG, "onReceive: screen OFF");
                 break;
         }
-
     }
 }

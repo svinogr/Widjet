@@ -67,7 +67,6 @@ public class MyWidget extends AppWidgetProvider {
         intentFilterTime.addAction(TimeChangeReceiver.TIME_SET);
         intentFilterTime.addAction(TimeChangeReceiver.TIME_TICK);
 
-
         context.getApplicationContext().registerReceiver(bootReceiver, intentFilterBoot);
         context.getApplicationContext().registerReceiver(screeOffOnReceiver, intentFilterScreen);
         context.getApplicationContext().registerReceiver(timeChangeReceiver, intentFilterTime);
@@ -119,7 +118,6 @@ public class MyWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-
     private RemoteViews getRemoteView(Context context) {
         PrazdnikDTO prazdnik = getPrazdnik();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -143,7 +141,6 @@ public class MyWidget extends AppWidgetProvider {
 
         return views;
     }
-
 
     //onDisabled вызывается при удалении последнего экземпляра виджета.
     @Override

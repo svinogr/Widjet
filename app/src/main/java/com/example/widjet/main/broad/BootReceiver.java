@@ -13,6 +13,5 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, " started");
        context.sendBroadcast(new Intent("android.appwidget.action.APPWIDGET_UPDATE"));
-
     }
 }
