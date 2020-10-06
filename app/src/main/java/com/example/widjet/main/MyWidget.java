@@ -1,7 +1,10 @@
 package com.example.widjet.main;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -41,6 +44,15 @@ public class MyWidget extends AppWidgetProvider {
     }
 
     private void registerBroadcast(Context context) {
+        Intent intent = new Intent(context, MyWidget.class);
+        intent.setAction(UPDATE_WIDGET);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) context
+                .getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(),
+                60000, pIntent);
+
         bootReceiver = new BootReceiver();
         IntentFilter intentFilterBoot = new IntentFilter();
         intentFilterBoot.addAction(BootReceiver.SCREEN_BOOT);
@@ -90,6 +102,24 @@ public class MyWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "onReceive: " + intent.getAction());
         super.onReceive(context, intent);
+
+        if (intent.getAction().equalsIgnoreCase(UPDATE_WIDGET)) {
+            ComponentName thisAppWidget = new ComponentName(
+                    context.getPackageName(), getClass().getName());
+            AppWidgetManager appWidgetManager = AppWidgetManager
+                    .getInstance(context);
+            int ids[] = appWidgetManager.getAppWidgetIds(thisAppWidget);
+            for (int appWidgetID : ids) {
+                updateWidget(context, appWidgetManager, appWidgetID);
+            }
+        }
+    }
+
+    void updateWidget(Context context, AppWidgetManager appWidgetManager,
+                      int appWidgetId) {
+        RemoteViews rv = getRemoteView(context);
+
+        appWidgetManager.updateAppWidget(appWidgetId, rv);
     }
 
 
@@ -123,6 +153,14 @@ public class MyWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         super.onDisabled(context);
         unregisterBroadcast(context);
+
+
+        Intent intent = new Intent(context, MyWidget.class);
+        intent.setAction(UPDATE_WIDGET);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) context
+                .getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pIntent);
     }
 
     private PrazdnikDTO getPrazdnik() {
