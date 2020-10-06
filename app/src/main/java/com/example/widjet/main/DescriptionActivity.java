@@ -17,17 +17,14 @@ import com.example.widjet.main.database.database.PrazdnikDataBase;
 import com.example.widjet.main.database.entity.PrazdnikEntity;
 import com.example.widjet.main.database.tdo.PrazdnikDTO;
 
-import static android.content.Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS;
-
 public class DescriptionActivity extends AppCompatActivity {
     private static final String TAG = "DescriptionActivity";
     public static final String ID = "id";
 
     public static PendingIntent getActivityIntent(Context context, long idPrasdnik) {
         Intent intent = new Intent(context, DescriptionActivity.class);
-        intent.setFlags(FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         Log.i(TAG, "getActivityIntent: " +idPrasdnik);
-      //  intent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
         intent.putExtra(ID, idPrasdnik);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) idPrasdnik, intent, 0);
         return pendingIntent;
@@ -88,8 +85,6 @@ public class DescriptionActivity extends AppCompatActivity {
         moveTaskToBack(true);
         finish();
     }
-
-
 
     @Override
     protected void onDestroy() {

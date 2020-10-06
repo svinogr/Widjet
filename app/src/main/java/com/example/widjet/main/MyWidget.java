@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class MyWidget extends AppWidgetProvider implements WidgetUpdateInterface {
+public class MyWidget extends AppWidgetProvider {
     public final static String UPDATE_WIDGET = "android.appwidget.action.APPWIDGET_UPDATE";
     private final String TAG = "MyWidget";
     private TextWatcher textWatcher;
@@ -38,13 +38,15 @@ public class MyWidget extends AppWidgetProvider implements WidgetUpdateInterface
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager, final int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        context.startService(new Intent(context, MyService.class));
+
         for (int i : appWidgetIds) {
             RemoteViews views = getRemoteView(context);
 
             appWidgetManager.updateAppWidget(i, views);
         }
 
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
 
@@ -57,6 +59,7 @@ public class MyWidget extends AppWidgetProvider implements WidgetUpdateInterface
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        Log.i(TAG, "onReceive: " + intent.getAction());
     }
 
 
@@ -69,16 +72,13 @@ public class MyWidget extends AppWidgetProvider implements WidgetUpdateInterface
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         String hour = calendar.get(Calendar.HOUR_OF_DAY) < 10 ? "0" + calendar.get(Calendar.HOUR_OF_DAY) : String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
         String minute = calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : String.valueOf(calendar.get(Calendar.MINUTE));
-        views.setTextViewText(R.id.timeImg, hour + ":" + minute);
-        views.setTextViewText(R.id.dateImg, simpleDateFormat.format(calendar.getTime()));
-
 
         views.setTextViewText(R.id.textImg, prazdnik.getName());
         views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
-    //    views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
-      //  views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+        views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
+        views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
 
         Log.i(TAG, "updateTimeWidget: " + prazdnik);
 
@@ -138,8 +138,4 @@ public class MyWidget extends AppWidgetProvider implements WidgetUpdateInterface
         return prazdnikEntity;
     }
 
-    @Override
-    public void updateWidgetByDate() {
-
-    }
 }

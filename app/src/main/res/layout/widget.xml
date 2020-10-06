@@ -6,32 +6,21 @@
 
 
     <TextClock
-        android:format12Hour="kk:mm"
         android:id="@+id/timeImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="50sp"
-        android:textColor="@color/timeColor"/>
+        android:format12Hour="kk:mm"
+        android:textColor="@color/timeColor"
+        android:textSize="50sp" />
 
     <TextClock
         android:id="@+id/dateImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/timeImg"
-        android:textSize="12sp"
-        android:format12Hour="MM.dd.yyyy"
-        tool:text="20/12/2020"
-        android:textColor="@color/timeColor"/>
-
- <!--   <com.example.widjet.main.CustomTextClock
-
-        android:id="@+id/dateImg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/timeImg"
-        android:textSize="12sp"
-        tool:text="20/12/2020"
-        android:textColor="@color/timeColor"/>-->
+        android:format24Hour="dd.MM.yyyy"
+        android:textColor="@color/timeColor"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/textImg"
@@ -44,10 +33,10 @@
         android:paddingLeft="8dp"
         android:paddingTop="8dp"
         android:paddingRight="8dp"
+        android:textColor="@color/timeColor"
         android:textSize="12sp"
         tool:text="HJ dhwjhdwwdwdwdwdwdwdjd hwdjwdwdwdwdwd
-         wjwhdjw djhwd  wdh"
-        android:textColor="@color/timeColor"/>
+         wjwhdjw djhwd  wdh" />
 
     <ImageView
         android:id="@+id/img"
@@ -55,6 +44,7 @@
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:contentDescription="im"
         android:src="@mipmap/ic_launcher_round" />
 
 </RelativeLayout>

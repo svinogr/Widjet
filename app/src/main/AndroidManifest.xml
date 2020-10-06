@@ -12,11 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
- <!--       <activity
+        <service
+            android:name=".main.MyService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
             android:name=".main.DescriptionActivity"
-            android:excludeFromRecents="true"
             android:label="@string/title_activity_description"
-            android:theme="@style/AppTheme.NoActionBar" />-->
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
             android:name=".main.broadcast.BootReceiver"
@@ -28,7 +32,6 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".main.MyWidget"
             android:icon="@android:drawable/btn_plus"
@@ -37,13 +40,13 @@
                 <action android:name="com.example.widjet.main.CustomTextClock.ACTION_INTENT" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTION" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_metadata" />
         </receiver>
-
     </application>
 
 </manifest>
