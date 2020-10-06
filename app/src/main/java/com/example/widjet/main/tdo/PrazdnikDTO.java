@@ -1,6 +1,6 @@
-package com.example.widjet.main.database.tdo;
+package com.example.widjet.main.tdo;
 
-import com.example.widjet.main.database.entity.PrazdnikEntity;
+import com.example.widjet.main.entity.PrazdnikEntity;
 
 import java.util.Arrays;
 

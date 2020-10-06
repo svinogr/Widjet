@@ -1,11 +1,11 @@
-package com.example.widjet.main.database;
+package com.example.widjet.main;
 
 import android.app.Application;
 import android.util.Log;
 
 import androidx.room.Room;
 
-import com.example.widjet.main.database.database.PrazdnikDataBase;
+import com.example.widjet.main.database.PrazdnikDataBase;
 
 import java.io.File;
 

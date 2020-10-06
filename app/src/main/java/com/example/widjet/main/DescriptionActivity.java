@@ -11,11 +11,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.widjet.R;
-import com.example.widjet.main.database.App;
-import com.example.widjet.main.database.dao.PrazdnikDao;
-import com.example.widjet.main.database.database.PrazdnikDataBase;
-import com.example.widjet.main.database.entity.PrazdnikEntity;
-import com.example.widjet.main.database.tdo.PrazdnikDTO;
+import com.example.widjet.main.dao.PrazdnikDao;
+import com.example.widjet.main.database.PrazdnikDataBase;
+import com.example.widjet.main.entity.PrazdnikEntity;
+import com.example.widjet.main.tdo.PrazdnikDTO;
 
 public class DescriptionActivity extends AppCompatActivity {
     private static final String TAG = "DescriptionActivity";

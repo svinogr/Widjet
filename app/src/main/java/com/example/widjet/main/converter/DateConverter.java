@@ -1,4 +1,4 @@
-package com.example.widjet.main.database.converter;
+package com.example.widjet.main.converter;
 
 import androidx.room.TypeConverter;
 

@@ -1,4 +1,4 @@
-package com.example.widjet.main.database.entity;
+package com.example.widjet.main.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -6,7 +6,7 @@ import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.widjet.main.database.converter.DateConverter;
+import com.example.widjet.main.converter.DateConverter;
 
 import java.util.Date;
 

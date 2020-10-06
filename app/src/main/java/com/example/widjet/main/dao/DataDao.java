@@ -1,12 +1,12 @@
-package com.example.widjet.main.database.dao;
+package com.example.widjet.main.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.TypeConverters;
 
-import com.example.widjet.main.database.converter.DateConverter;
-import com.example.widjet.main.database.entity.DataEntity;
+import com.example.widjet.main.converter.DateConverter;
+import com.example.widjet.main.entity.DataEntity;
 
 import java.util.List;
 

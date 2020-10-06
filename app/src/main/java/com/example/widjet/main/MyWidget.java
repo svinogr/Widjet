@@ -9,14 +9,13 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.widjet.R;
-import com.example.widjet.main.database.App;
-import com.example.widjet.main.database.converter.DateConverter;
-import com.example.widjet.main.database.dao.DataDao;
-import com.example.widjet.main.database.dao.PrazdnikDao;
-import com.example.widjet.main.database.database.PrazdnikDataBase;
-import com.example.widjet.main.database.entity.DataEntity;
-import com.example.widjet.main.database.entity.PrazdnikEntity;
-import com.example.widjet.main.database.tdo.PrazdnikDTO;
+import com.example.widjet.main.converter.DateConverter;
+import com.example.widjet.main.dao.DataDao;
+import com.example.widjet.main.dao.PrazdnikDao;
+import com.example.widjet.main.database.PrazdnikDataBase;
+import com.example.widjet.main.entity.DataEntity;
+import com.example.widjet.main.entity.PrazdnikEntity;
+import com.example.widjet.main.tdo.PrazdnikDTO;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

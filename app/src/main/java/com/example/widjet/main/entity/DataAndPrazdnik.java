@@ -1,4 +1,4 @@
-package com.example.widjet.main.database.entity;
+package com.example.widjet.main.entity;
 
 import androidx.room.Embedded;
 import androidx.room.Relation;

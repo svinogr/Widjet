@@ -1,10 +1,10 @@
-package com.example.widjet.main.database.dao;
+package com.example.widjet.main.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.widjet.main.database.entity.PrazdnikEntity;
+import com.example.widjet.main.entity.PrazdnikEntity;
 
 import java.util.List;
 
