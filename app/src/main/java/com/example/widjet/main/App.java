@@ -46,8 +46,6 @@ public class App extends Application {
                     .build();
             System.out.println("файл уже есть");
         }
-
-
     }
 
     @Override
@@ -55,6 +53,4 @@ public class App extends Application {
         Log.i(TAG, "onTerminate: ");
         super.onTerminate();
     }
-
-
 }
