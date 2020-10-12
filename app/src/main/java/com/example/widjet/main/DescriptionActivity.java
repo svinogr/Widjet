@@ -30,10 +30,9 @@ public class DescriptionActivity extends AppCompatActivity {
     public static PendingIntent getActivityIntent(Context context, long idPrasdnik) {
         Intent intent = new Intent(context, DescriptionActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        Log.i(TAG, "getActivityIntent: " +idPrasdnik);
+        Log.i(TAG, "getActivityIntent: " + idPrasdnik);
         intent.putExtra(ID, idPrasdnik);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) idPrasdnik, intent, 0);
-        return pendingIntent;
+        return PendingIntent.getActivity(context, (int) idPrasdnik, intent, 0);
     }
 
     @Override
@@ -44,7 +43,9 @@ public class DescriptionActivity extends AppCompatActivity {
         Intent intent = getIntent();
         long id = intent.getLongExtra(ID, -1);
         Log.i(TAG, "onCreate: id " + id + " " + intent.getAction());
-        PrazdnikDTO prazdnik  = getPrazdnik(id);
+        PrazdnikDTO prazdnik = getPrazdnik(id);
+
+        setTitle(prazdnik.getName());
 
         ImageView imageView = findViewById(R.id.image_description_activity);
         imageView.setImageBitmap(roundedBitmap(this, prazdnik));
@@ -64,8 +65,8 @@ public class DescriptionActivity extends AppCompatActivity {
                 context.getPackageName()));
 
         Bitmap imageRounded = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-        Canvas canvas=new Canvas(imageRounded);
-        Paint mpaint=new Paint();
+        Canvas canvas = new Canvas(imageRounded);
+        Paint mpaint = new Paint();
         mpaint.setAntiAlias(true);
         mpaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
         canvas.drawRoundRect((new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight())), 200, 200, mpaint); // Round Image Corner 100 100 100 100
@@ -73,7 +74,7 @@ public class DescriptionActivity extends AppCompatActivity {
     }
 
     private PrazdnikDTO getPrazdnik(long id) {
-        if(id == -1 ) {
+        if (id == -1) {
             return defaultPrasdnik();
         }
 
@@ -108,7 +109,7 @@ public class DescriptionActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-       // App.getInstance().getPrazdnikDataBase().close();
+        // App.getInstance().getPrazdnikDataBase().close();
         Log.i(TAG, "onDestroy: ");
         super.onDestroy();
     }
