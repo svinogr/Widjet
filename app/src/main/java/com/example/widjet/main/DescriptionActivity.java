@@ -3,6 +3,13 @@ package com.example.widjet.main;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -40,7 +47,7 @@ public class DescriptionActivity extends AppCompatActivity {
         PrazdnikDTO prazdnik  = getPrazdnik(id);
 
         ImageView imageView = findViewById(R.id.image_description_activity);
-        imageView.setImageResource(getResources().getIdentifier("drawable/" + prazdnik.getImg(), null, getPackageName()));
+        imageView.setImageBitmap(roundedBitmap(this, prazdnik));
 
         TextView name = findViewById(R.id.name_description_activity);
         name.setText(prazdnik.getName());
@@ -49,6 +56,20 @@ public class DescriptionActivity extends AppCompatActivity {
         description.setText(prazdnik.getDescription());
 
         setResult(RESULT_CANCELED);
+    }
+
+    private Bitmap roundedBitmap(Context context, PrazdnikDTO prazdnik) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
+                null,
+                context.getPackageName()));
+
+        Bitmap imageRounded = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        Canvas canvas=new Canvas(imageRounded);
+        Paint mpaint=new Paint();
+        mpaint.setAntiAlias(true);
+        mpaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+        canvas.drawRoundRect((new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight())), 200, 200, mpaint); // Round Image Corner 100 100 100 100
+        return imageRounded;
     }
 
     private PrazdnikDTO getPrazdnik(long id) {

@@ -8,6 +8,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -130,16 +137,29 @@ public class MyWidget extends AppWidgetProvider {
         String minute = calendar.get(Calendar.MINUTE) < 10 ? "0" + calendar.get(Calendar.MINUTE) : String.valueOf(calendar.get(Calendar.MINUTE));
 
         views.setTextViewText(R.id.textImg, prazdnik.getName());
-        views.setImageViewResource(R.id.img, context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
-                null,
-                context.getPackageName()));
+
+        views.setImageViewBitmap(R.id.img, roundedBitmap(context, prazdnik));
 
         views.setOnClickPendingIntent(R.id.textImg, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
         views.setOnClickPendingIntent(R.id.img, DescriptionActivity.getActivityIntent(context, prazdnik.getId()));
-        ;
+
         Log.i(TAG, "updateTimeWidget: " + prazdnik);
 
         return views;
+    }
+
+    private Bitmap roundedBitmap(Context context, PrazdnikDTO prazdnik) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
+                null,
+                context.getPackageName()));
+
+        Bitmap imageRounded = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        Canvas canvas=new Canvas(imageRounded);
+        Paint mpaint=new Paint();
+        mpaint.setAntiAlias(true);
+        mpaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+        canvas.drawRoundRect((new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight())), 200, 200, mpaint); // Round Image Corner 100 100 100 100
+        return imageRounded;
     }
 
     //onDisabled вызывается при удалении последнего экземпляра виджета.
