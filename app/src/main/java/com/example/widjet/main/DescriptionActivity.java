@@ -48,8 +48,7 @@ public class DescriptionActivity extends AppCompatActivity {
         setTitle(prazdnik.getName());
 
         ImageView imageView = findViewById(R.id.image_description_activity);
-      //  imageView.setImageBitmap(roundedBitmap(this, prazdnik));
-        imageView.setImageResource(BitmapFactory.;
+        imageView.setImageResource(getResources().getIdentifier("drawable/" + prazdnik.getImg(), null, getPackageName()));
 
         TextView name = findViewById(R.id.name_description_activity);
         name.setText(prazdnik.getName());
@@ -94,19 +93,19 @@ public class DescriptionActivity extends AppCompatActivity {
         return new PrazdnikDTO(prazdnikEntity);
     }
 
-    @Override
+/*    @Override
     protected void onStop() {
         Log.i(TAG, "onStop: ");
         super.onStop();
         finish();
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void onBackPressed() {
         super.onBackPressed();
         moveTaskToBack(true);
         finish();
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

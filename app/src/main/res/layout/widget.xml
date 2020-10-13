@@ -4,10 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <TextClock
+    <RelativeLayout
+        android:id="@+id/layoutDate"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:paddingStart="4dp"
-        android:paddingEnd="2dp"
+        android:paddingEnd="2dp">
+    <TextClock
+
         tool:text="00:00"
         android:id="@+id/timeImg"
         android:layout_width="wrap_content"
@@ -17,25 +22,26 @@
         android:textSize="50sp" />
 
     <TextClock
-        android:paddingStart="4dp"
-        android:paddingEnd="2dp"
         tool:text="20.20.30"
         android:id="@+id/dateImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/timeImg"
         android:format24Hour="E, dd MMMM"
+        android:format12Hour="E, dd MMMM"
         android:textColor="@color/timeColor"
         android:textSize="12sp" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/img"
-        android:layout_toEndOf="@id/timeImg"
+        android:layout_toEndOf="@id/layoutDate"
         android:gravity="center"
         android:lines="5"
+        android:layout_centerVertical="true"
         android:paddingLeft="8dp"
         android:paddingTop="8dp"
         android:paddingRight="8dp"
@@ -51,8 +57,9 @@
         android:layout_height="75dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:paddingEnd="2dp"
         android:contentDescription="@string/description_image"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
         android:src="@drawable/god" />
 
 </RelativeLayout>

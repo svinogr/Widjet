@@ -152,13 +152,15 @@ public class MyWidget extends AppWidgetProvider {
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), context.getResources().getIdentifier("drawable/" + prazdnik.getImg(),
                 null,
                 context.getPackageName()));
-
+        bitmap = Bitmap.createScaledBitmap(bitmap, 75, 75, false);
+        Log.i(TAG, "roundedBitmap: " + bitmap.getWidth() + " " + bitmap.getHeight());
         Bitmap imageRounded = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-        Canvas canvas=new Canvas(imageRounded);
-        Paint mpaint=new Paint();
+        Log.i(TAG, "roundedBitmap: " + imageRounded.getWidth() + " " + imageRounded.getHeight());
+        Canvas canvas = new Canvas(imageRounded);
+        Paint mpaint = new Paint();
         mpaint.setAntiAlias(true);
         mpaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-        canvas.drawRoundRect((new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight())), 200, 200, mpaint); // Round Image Corner 100 100 100 100
+        canvas.drawRoundRect((new RectF(0, 0, 75, 75)), 5, 5, mpaint); // Round Image Corner 100 100 100 100
         return imageRounded;
     }
 
