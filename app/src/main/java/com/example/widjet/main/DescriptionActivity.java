@@ -48,7 +48,8 @@ public class DescriptionActivity extends AppCompatActivity {
         setTitle(prazdnik.getName());
 
         ImageView imageView = findViewById(R.id.image_description_activity);
-        imageView.setImageBitmap(roundedBitmap(this, prazdnik));
+      //  imageView.setImageBitmap(roundedBitmap(this, prazdnik));
+        imageView.setImageResource(BitmapFactory.;
 
         TextView name = findViewById(R.id.name_description_activity);
         name.setText(prazdnik.getName());

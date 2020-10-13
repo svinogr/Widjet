@@ -16,14 +16,8 @@
         <activity
             android:name=".main.DescriptionActivity"
             android:label="@string/title_activity_description"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <receiver
-            android:name=".main.broadcast.TimeBroadcast"
-            android:enabled="true"
-            android:exported="true">
-
-        </receiver>
         <receiver
             android:name=".main.broad.BootReceiver"
             android:enabled="true"
