@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingStart="4dp"
         android:paddingEnd="2dp">
-    <TextClock
 
+    <TextClock
         tool:text="00:00"
         android:id="@+id/timeImg"
         android:layout_width="wrap_content"
@@ -39,15 +39,16 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/img"
         android:layout_toEndOf="@id/layoutDate"
-        android:gravity="center"
+        android:gravity="center|fill_vertical"
         android:lines="5"
         android:layout_centerVertical="true"
         android:paddingLeft="8dp"
         android:paddingTop="8dp"
         android:paddingRight="8dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="2dp"
         android:textColor="@color/timeColor"
         android:textSize="12sp"
+        android:ellipsize="end"
         tool:text="HJ  hwdjwdwdwdwdwd
          wjwhdjw djhwd  wdh" />
 
@@ -60,6 +61,7 @@
         android:contentDescription="@string/description_image"
         android:paddingStart="2dp"
         android:paddingEnd="2dp"
+        android:paddingBottom="2dp"
         android:src="@drawable/god" />
 
 </RelativeLayout>

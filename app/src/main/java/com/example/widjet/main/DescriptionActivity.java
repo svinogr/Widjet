@@ -32,8 +32,10 @@ public class DescriptionActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         Log.i(TAG, "getActivityIntent: " + idPrasdnik);
         intent.putExtra(ID, idPrasdnik);
-        return PendingIntent.getActivity(context, (int) idPrasdnik, intent, 0);
+        return PendingIntent.getActivity(context, (int) idPrasdnik, intent, (int) idPrasdnik);
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
