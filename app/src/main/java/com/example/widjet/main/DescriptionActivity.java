@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.widjet.R;
 import com.example.widjet.main.dao.PrazdnikDao;
 import com.example.widjet.main.database.PrazdnikDataBase;
@@ -50,7 +51,9 @@ public class DescriptionActivity extends AppCompatActivity {
         setTitle(prazdnik.getName());
 
         ImageView imageView = findViewById(R.id.image_description_activity);
-        imageView.setImageResource(getResources().getIdentifier("drawable/" + prazdnik.getImg(), null, getPackageName()));
+
+        Glide.with(imageView).load(getBitmap(prazdnik.getImg())).fitCenter();
+     //   imageView.setImageBitmap(getBitmap(prazdnik.getImg()));
 
         TextView name = findViewById(R.id.name_description_activity);
         name.setText(prazdnik.getName());
@@ -59,6 +62,13 @@ public class DescriptionActivity extends AppCompatActivity {
         description.setText(prazdnik.getDescription());
 
         setResult(RESULT_CANCELED);
+    }
+
+    private Bitmap getBitmap(String image) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("drawable/" + image,
+                null,
+                getPackageName()));
+        return bitmap;
     }
 
     private Bitmap roundedBitmap(Context context, PrazdnikDTO prazdnik) {
