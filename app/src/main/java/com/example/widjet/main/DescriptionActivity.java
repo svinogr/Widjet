@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,12 +48,14 @@ public class DescriptionActivity extends AppCompatActivity {
         long id = intent.getLongExtra(ID, -1);
         Log.i(TAG, "onCreate: id " + id + " " + intent.getAction());
         PrazdnikDTO prazdnik = getPrazdnik(id);
-
+        Log.i(TAG, "onCreate: id " + id + " " + prazdnik.getImg());
         setTitle(prazdnik.getName());
 
         ImageView imageView = findViewById(R.id.image_description_activity);
 
-        Glide.with(imageView).load(getBitmap(prazdnik.getImg())).fitCenter();
+        setupSizeImView(imageView);
+
+        Glide.with(this).load(getBitmap(prazdnik.getImg())).fitCenter().into(imageView);
      //   imageView.setImageBitmap(getBitmap(prazdnik.getImg()));
 
         TextView name = findViewById(R.id.name_description_activity);
@@ -62,6 +65,23 @@ public class DescriptionActivity extends AppCompatActivity {
         description.setText(prazdnik.getDescription());
 
         setResult(RESULT_CANCELED);
+    }
+
+    private void setupSizeImView(ImageView imageView) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+
+        double searchWidth = width - 200;
+        double searchHeight = searchWidth / 700 * 555;
+
+        Log.i(TAG, "setupSizeImView: " + width + " "+ searchHeight + " " + searchWidth);
+
+        imageView.getLayoutParams().width = (int) searchWidth;
+        imageView.getLayoutParams().height = (int) searchHeight;
+        imageView.requestLayout();
+
     }
 
     private Bitmap getBitmap(String image) {
