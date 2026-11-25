@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    namespace 'com.example.widjet'
+    compileSdk 36
+
+    lintOptions {
+        disable 'ExpiredTargetSdkVersion'
+    }
 
     defaultConfig {
-        applicationId "com.example.widjet"
-        minSdkVersion 21
-        targetSdkVersion 30
+        applicationId "com.example.widjet2"
+        minSdk 29
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 
@@ -15,6 +19,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            debuggable false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -23,6 +30,17 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.navigation:navigation-fragment:2.3.0'
+    implementation 'androidx.navigation:navigation-ui:2.3.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+
+    def room_version = "2.2.5"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     testImplementation 'junit:junit:4.12'
