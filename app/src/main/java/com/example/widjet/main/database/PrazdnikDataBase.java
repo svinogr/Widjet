@@ -9,7 +9,7 @@ import com.example.widjet.main.entity.DataEntity;
 import com.example.widjet.main.entity.PrazdnikEntity;
 
 
-@Database(entities = {PrazdnikEntity.class, DataEntity.class}, version = 1)
+@Database(entities = {PrazdnikEntity.class, DataEntity.class}, version = 2)
 public abstract class PrazdnikDataBase extends RoomDatabase {
     public abstract PrazdnikDao prazdnikDao();
     public abstract DataDao dataDao();

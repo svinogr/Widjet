@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.room.Room;
 
+import com.example.widjet.main.database.Migrations;
 import com.example.widjet.main.database.PrazdnikDataBase;
 
 import java.io.File;
@@ -33,16 +34,20 @@ public class App extends Application {
         //убрать allowqweryy времено для работы в UI
         final File dbFile = this.getApplicationContext().getDatabasePath(DB_NAME);
 
+        Migrations migrations = new Migrations(this);
+
         if (!dbFile.exists()) {
             prazdnikDataBase = Room.databaseBuilder(this, PrazdnikDataBase.class, "prazdnik")
                     .allowMainThreadQueries()
                     .createFromAsset("prazdnik")
+                    .addMigrations(migrations.MIGRATION_1_2)
                     .build();
 
             System.out.println("база пошла делаться");
         } else {
             prazdnikDataBase = Room.databaseBuilder(this, PrazdnikDataBase.class, "prazdnik")
                     .allowMainThreadQueries()
+                    .addMigrations(migrations.MIGRATION_1_2)
                     .build();
             System.out.println("файл уже есть");
         }

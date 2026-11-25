@@ -38,6 +38,9 @@ import java.util.List;
 
 public class MyWidget extends AppWidgetProvider {
     public final static String UPDATE_WIDGET = "android.appwidget.action.APPWIDGET_UPDATE";
+    // собственный action для минутного будильника — системная APPWIDGET_UPDATE защищена,
+    // приложение не может отправлять её само (будильник молча глушится)
+    public final static String TICK = "com.example.widjet.action.TICK";
     private final String TAG = "MyWidget";
     private BootReceiver bootReceiver;
     private ScreeOffOnReceiver screeOffOnReceiver;
@@ -46,20 +49,36 @@ public class MyWidget extends AppWidgetProvider {
     //onEnabled вызывается системой при создании первого экземпляра виджета (мы ведь можем добавить в Home несколько экземпляров одного и того же виджета).
     @Override
     public void onEnabled(final Context context) {
+        scheduleAlarm(context);
         registerBroadcast(context);
         super.onEnabled(context);//
     }
 
-    private void registerBroadcast(Context context) {
+    // переставляем минутный будильник — вызывается при создании виджета и после перезагрузки
+    public static void scheduleAlarm(Context context) {
         Intent intent = new Intent(context, MyWidget.class);
-        intent.setAction(UPDATE_WIDGET);
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        intent.setAction(TICK);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(),
                 60000, pIntent);
+    }
 
+    // обновляет все экземпляры виджета; используется будильником и BootReceiver
+    public static void updateAllWidgets(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName thisAppWidget = new ComponentName(context, MyWidget.class);
+        int[] ids = appWidgetManager.getAppWidgetIds(thisAppWidget);
+        MyWidget widget = new MyWidget();
+        for (int appWidgetID : ids) {
+            widget.updateWidget(context, appWidgetManager, appWidgetID);
+        }
+    }
+
+    private void registerBroadcast(Context context) {
         bootReceiver = new BootReceiver();
         IntentFilter intentFilterBoot = new IntentFilter();
         intentFilterBoot.addAction(BootReceiver.SCREEN_BOOT);
@@ -80,9 +99,22 @@ public class MyWidget extends AppWidgetProvider {
     }
 
     private void unregisterBroadcast(Context context) {
-        context.getApplicationContext().unregisterReceiver(bootReceiver);
-        context.getApplicationContext().unregisterReceiver(screeOffOnReceiver);
-        context.getApplicationContext().unregisterReceiver(timeChangeReceiver);
+        // receiver'ы регистрируются в другом экземпляре/процессе — здесь они могут быть null
+        try {
+            if (bootReceiver != null)
+                context.getApplicationContext().unregisterReceiver(bootReceiver);
+        } catch (IllegalArgumentException ignored) {
+        }
+        try {
+            if (screeOffOnReceiver != null)
+                context.getApplicationContext().unregisterReceiver(screeOffOnReceiver);
+        } catch (IllegalArgumentException ignored) {
+        }
+        try {
+            if (timeChangeReceiver != null)
+                context.getApplicationContext().unregisterReceiver(timeChangeReceiver);
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 
     //onUpdate вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет AppWidgetManager, который мы получаем на вход.
@@ -107,15 +139,9 @@ public class MyWidget extends AppWidgetProvider {
         Log.i(TAG, "onReceive: " + intent.getAction());
         super.onReceive(context, intent);
 
-        if (intent.getAction().equalsIgnoreCase(UPDATE_WIDGET)) {
-            ComponentName thisAppWidget = new ComponentName(
-                    context.getPackageName(), getClass().getName());
-            AppWidgetManager appWidgetManager = AppWidgetManager
-                    .getInstance(context);
-            int ids[] = appWidgetManager.getAppWidgetIds(thisAppWidget);
-            for (int appWidgetID : ids) {
-                updateWidget(context, appWidgetManager, appWidgetID);
-            }
+        if (intent.getAction().equalsIgnoreCase(TICK)
+                || intent.getAction().equalsIgnoreCase(UPDATE_WIDGET)) {
+            updateAllWidgets(context);
         }
     }
 
@@ -171,8 +197,9 @@ public class MyWidget extends AppWidgetProvider {
 
         unregisterBroadcast(context);
         Intent intent = new Intent(context, MyWidget.class);
-        intent.setAction(UPDATE_WIDGET);
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        intent.setAction(TICK);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);

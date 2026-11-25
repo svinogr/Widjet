@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    namespace 'com.example.widjet'
+    compileSdk 37
+
+    lintOptions {
+        disable 'ExpiredTargetSdkVersion'
+    }
 
     defaultConfig {
         applicationId "com.example.widjet"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -15,6 +19,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            debuggable false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
